@@ -19,7 +19,6 @@ class BoardModel {
   }
 
   setItem(id, data) {
-    debugger
     this.list.mapping[id] = { ...this.list.mapping[id], ...data };
   }
 
