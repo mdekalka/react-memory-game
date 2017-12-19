@@ -1,7 +1,15 @@
 import React, { Component } from 'react';
 import classNames from 'classnames';
+import { Tooltip } from 'react-tippy';
 
-import { gameOptions, setStepsLimit, generateBoard } from './GameShellService';
+import {
+  BOARD_AVAILABLE_SIZES,
+  gameOptions,
+  generateBoard,
+  setStepsLimit,
+  defineSelectedItems,
+  validateOptions } from './GameShellService';
+import GameMenu from './GameMenu/GameMenu';
 
 import './GamShell.scss';
 
@@ -11,33 +19,45 @@ class GameShell extends Component {
 
   state = {
     board: [],
+    keys: [],
     shownCount: 0,
     openedItemKeys: [],
     allAtempts: 0,
     lockedItems: 0,
     errors: [],
+    validationsErrors: {},
     isAdvancedMenuOpen: true,
-    options: gameOptions,
-    startTime: new Date(),
-    finishTime: null
+    options: gameOptions
   }
 
   componentDidMount() {
-    this.createNewBoard();
+    this.createNewBoard(this.state.options.size, this.state.options.items);
   }
 
   componentWillUnMount() {
     clearTimeout(this.failedAttemptTimeout);
   }
 
-  createNewBoard() {
-    const board = generateBoard(gameOptions.size, gameOptions.items);
+  createNewBoard(boardSize, boardItems) {
+    const board = generateBoard(boardSize, boardItems);
 
     if (board.error) {
       this.setState({ errors: [].concat(board.error), lockedItems: 0 });
     } else {
-      this.setState({ board: board.items, lockedItems: 0 });
+      this.setState({ board: board.items, lockedItems: 0, keys: board.uniqueKeys });
     }
+  }
+
+  resetCurrentBoard() {
+    this.setState(prevState => {
+      return {
+        board: prevState.board.map(item => ({ _id: item._id, key: item.key, image: item.image })),
+        shownCount: 0,
+        openedItemKeys: [],
+        allAtempts: 0,
+        lockedItems: 0,
+      }
+    })
   }
 
   onBoardItemClick = ({ _id, key }) => {
@@ -100,19 +120,50 @@ class GameShell extends Component {
   }
 
   onAdvancedMenuToggle = () => {
+    const { isAdvancedMenuOpen } = this.state;
+
+    if (!isAdvancedMenuOpen) {
+      this.resetCurrentBoard();
+    }
+
     this.setState({ isAdvancedMenuOpen: !this.state.isAdvancedMenuOpen });
   }
 
   onSizeItemClick = (size) => {
-    this.setState(prevState => ({options: {...prevState.options, size }}));
+    this.setState(prevState => ({ options: { ...prevState.options, size }}));
+    this.createNewBoard(size, this.state.options.items);
   }
 
   onStepLimitToggle = (hasLimit) => {
-    this.setState(prevState => ({ options: {...prevState.options, stepsLimit: hasLimit ? setStepsLimit : null } }));
+    this.setState(prevState => ({ options: { ...prevState.options, stepsLimit: hasLimit ? setStepsLimit : null } }));
+  }
+
+  onImageSelect = (imageItem) => {
+    const { keys, options, validationsErrors } = this.state;
+
+
+    if (keys.includes(imageItem.key)) {
+      let errors = { ...validationsErrors };
+
+      if ( keys.length - 1 < options.size / 2) {
+        const lackCount = (options.size / 2) - (keys.length - 1);
+
+        errors.invalidImageCount = `You should add atleast ${lackCount} image(s).`;
+      }
+
+      this.setState({ validationsErrors: errors, keys: keys.filter(key => key !== imageItem.key) });
+    } else {
+      this.setState({ keys: keys.concat(imageItem.key) });
+    }
+  }
+
+  isGameOver() {
+    return this.state.board.length > 0 && this.state.lockedItems === this.state.board.length;
   }
 
   render() {
-    const isGameOver = this.state.lockedItems === this.state.board.length;
+    const isGameOver = this.isGameOver();
+    const predefinedItems = defineSelectedItems(this.state.keys);
 
     return (
       <div className={classNames('game-shell', {'game-over': isGameOver})}>
@@ -122,7 +173,7 @@ class GameShell extends Component {
               <div key={boardItem._id} className="board-box">
                 <div className={classNames('board-item', {'open': boardItem.open, 'locked': boardItem.locked, 'success': boardItem.success})}
                     onClick={() => boardItem.open ? null : this.onBoardItemClick(boardItem)}>
-                  <div className="board-preview board-preview-front">{index}</div>
+                  <div className="board-preview board-preview-front">{index + 1}</div>
                   <div className="board-preview board-preview-back">
                     <img className="board-image" src={boardItem.image} alt="" />
                   </div>
@@ -130,6 +181,14 @@ class GameShell extends Component {
               </div>
             ))}
           </div>
+          {
+            !!this.state.errors.length &&
+            <div className="error-list">
+              {this.state.errors.map((error, index) => (
+                <div className="error-item" key={index}>{error}</div>
+              ))}
+            </div>
+          }
           {
             isGameOver &&
             <div className="board-game-over">
@@ -140,47 +199,13 @@ class GameShell extends Component {
         </div>
         <div className={classNames('board-menu', {'open': this.state.isAdvancedMenuOpen})}>
           <div className="board-options">
-            <div className="nav-btn pointer" onClick={this.onAdvancedMenuToggle}>Advanced options: <i className="fa fa-angle-double-right" aria-hidden="true"></i></div>
+            <div className="menu-row-title nav-btn pointer" onClick={this.onAdvancedMenuToggle}>Advanced options: <i className="fa fa-angle-double-right" aria-hidden="true"></i></div>
             <div>All attempts: {this.state.allAtempts}</div>
             <div>Opened items: {this.state.lockedItems}</div>
           </div>
-          <div className="advanced-menu">
-            <div className="nav-btn pointer" onClick={this.onAdvancedMenuToggle}>
-              <i className="fa fa-angle-double-left" aria-hidden="true"></i> Back
-            </div>
-            <div className="menu-row">
-              <div className="menu-row-title">Board items count:</div>
-              <div className="menu-row-content">
-                <ul className="size-list">
-                  <li onClick={() => this.onSizeItemClick(10)} className={classNames('size-item', {'active': 10 === this.state.options.size})}>10</li>
-                  <li onClick={() => this.onSizeItemClick(12)} className={classNames('size-item', {'active': 12 === this.state.options.size})}>12</li>
-                  <li onClick={() => this.onSizeItemClick(14)} className={classNames('size-item', {'active': 14 === this.state.options.size})}>14</li>
-                  <li onClick={() => this.onSizeItemClick(16)} className={classNames('size-item', {'active': 16 === this.state.options.size})}>16</li>
-                </ul>
-              </div>
-            </div>
-            <div className="menu-row">
-              <div className="menu-row-title">Board images:</div>
-              <div className="menu-row-content">
-                <ul className="image-list">
-                  {this.state.options && this.state.options.items.map(imageItem => (
-                    <li className="image-item pointer" key={imageItem.key}>
-                      {/* {imageItem.selected} */}
-                      <i className="fa fa-check-circle-o" aria-hidden="true"></i>
-                      <img className="image-picture" src={imageItem.image} alt="" />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <div className="menu-row">
-              <div className="menu-row-title">Steps to end:</div>
-              <div className="menu-row-content">
-                <button onClick={() => this.onStepLimitToggle(true)}>On</button>
-                <button onClick={() => this.onStepLimitToggle()}>Off</button>
-              </div>
-            </div>
-          </div>
+          <GameMenu onMenuToggle={this.onAdvancedMenuToggle} onImageSelect={this.onImageSelect} onSizeItemClick={this.onSizeItemClick}
+            onStepLimitToggle={this.onStepLimitToggle} items={predefinedItems} options={this.state.options}
+            errors={this.state.validationsErrors} />
         </div>
       </div>
     )

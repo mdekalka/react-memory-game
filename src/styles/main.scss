@@ -2,8 +2,11 @@
 $fa-font-path: '~font-awesome/fonts';
 @import '~font-awesome/scss/font-awesome';
 @import '~normalize-scss/sass/normalize/import-now';
+@import '~react-tippy/dist/tippy.css';
 
 @import 'fonts';
 @import 'scaffolding';
 @import 'utils';
 @import 'layout';
+@import 'buttons';
+@import 'tooltips';

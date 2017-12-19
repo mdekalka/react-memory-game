@@ -1,31 +1,24 @@
 import { shuffle } from 'lodash';
 
 import { extendWithId} from '../utils/utils';
+import { itemImages } from './GameAssets';
 
-import bulba from '../assets/1.png';
-import ivy from '../assets/2.png';
-import venus from '../assets/3.png';
-import charmander from '../assets/4.png';
-import charmeleon from '../assets/5.png';
-import charizard from '../assets/6.png';
-import squirtle from '../assets/7.png';
-import wartoitle from '../assets/8.png';
+export const BOARD_AVAILABLE_SIZES = [10, 12, 14, 16];
+const BOARD_DEFAULT_SIZE = BOARD_AVAILABLE_SIZES[0];
 
-const BOARD_ITEMS_SIZE = 4;
+const generateGameItems = (items) => {
+  return Object.keys(items).map(item => {
+    return {
+      key: item,
+      image: items[item]
+    }
+  })
+};
 
-export const gameItems = [
-  { key: 'bulba', image: bulba },
-  { key: 'ivy', image: ivy },
-  { key: 'venus', image: venus },
-  { key: 'charmander', image: charmander },
-  { key: 'charmeleon', image: charmeleon },
-  { key: 'charizard', image: charizard },
-  { key: 'squirtle', image: squirtle },
-  { key: 'wartoitle', image: wartoitle },
-];
+const gameItems = generateGameItems(itemImages);
 
 export const gameOptions = {
-  size: BOARD_ITEMS_SIZE,
+  size: BOARD_DEFAULT_SIZE,
   items: gameItems,
   stepsLimit: null
 };
@@ -42,7 +35,10 @@ export const generateBoard = (size = 4, items = []) => {
 
     const slicedArray = items.slice(0, size / 2);
 
-    return { items: shuffle([...extendWithId(slicedArray), ...extendWithId(slicedArray)]) };
+    return {
+      uniqueKeys: slicedArray.map(item => item.key),
+      items: shuffle([...extendWithId(slicedArray), ...extendWithId(slicedArray)])
+    };
   } else {
     return { error: 'Size of the board should even' };
   }
@@ -51,4 +47,22 @@ export const generateBoard = (size = 4, items = []) => {
 export const setStepsLimit = (size) => {
   const successLimit = size / 2;
   return successLimit + Math.floor(successLimit / 1.5);
+};
+
+export const defineSelectedItems = (activeKeys) => {
+  if (!activeKeys.length) {
+    return gameItems;
+  };
+
+  return gameItems.map(item => {
+    if (activeKeys.includes(item.key)) {
+      return {...item, selected: true };
+    } else {
+      return item;
+    }
+  })
+}
+
+export const validateOptions = (incomingOption, options) => {
+
 }
