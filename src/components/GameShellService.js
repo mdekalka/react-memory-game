@@ -63,6 +63,12 @@ export const defineSelectedItems = (activeKeys) => {
   })
 }
 
-export const validateOptions = (incomingOption, options) => {
+export const validateImageCount = (keysLength, size) => {
+  if (keysLength < size / 2) {
+    const lackCount = (size / 2) - keysLength;
 
+    return `You should add atleast ${lackCount} image(s) for this board size.`;
+  }
+
+  return null;
 }

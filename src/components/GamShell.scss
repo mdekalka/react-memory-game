@@ -127,6 +127,7 @@
       .board-preview-back {
         border: 1px solid rgba(134, 94, 9, 0.47);
 
+
         &::after {
           content: '';
           display: block;
@@ -227,7 +228,6 @@
     }
 
     &.selected {
-
       &::before {
         content: '';
         position: absolute;
@@ -262,5 +262,18 @@
 
   &:first-child {
     margin-bottom: 0;
+  }
+}
+
+.notification-message {
+  margin-top: 10px;
+  font-size: 16px;
+
+  &.error {
+    color: #da4747;
+  }
+
+  .highlight {
+    color: #dcd81e;
   }
 }

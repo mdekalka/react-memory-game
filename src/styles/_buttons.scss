@@ -1,3 +1,14 @@
 .btn {
+  background-color: #000;
+  padding: 20px;
+  border: none;
+  outline: none;
+  color: #fff;
+  transition: background-color .2s ease;
+  cursor: pointer;
 
+  &:hover,
+  &.active {
+    background-color: #253c52;
+  }
 }

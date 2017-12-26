@@ -8,6 +8,7 @@ import {
   generateBoard,
   setStepsLimit,
   defineSelectedItems,
+  validateImageCount,
   validateOptions } from './GameShellService';
 import GameMenu from './GameMenu/GameMenu';
 
@@ -16,6 +17,7 @@ import './GamShell.scss';
 class GameShell extends Component {
   static MAX_COUNT = 2;
   static BOARD_ITEMS = 4;
+  static ANIMATION_TIMEOUT = 1000;
 
   state = {
     board: [],
@@ -108,7 +110,7 @@ class GameShell extends Component {
                   allAtempts: ++prevState.allAtempts
                 }
               })
-            }, 1000);
+            }, GameShell.ANIMATION_TIMEOUT);
           }
         }
       })
@@ -130,31 +132,35 @@ class GameShell extends Component {
   }
 
   onSizeItemClick = (size) => {
-    this.setState(prevState => ({ options: { ...prevState.options, size }}));
+    this.setState(prevState => ({ validationsErrors: {}, options: { ...prevState.options, size }}));
     this.createNewBoard(size, this.state.options.items);
   }
 
-  onStepLimitToggle = (hasLimit) => {
-    this.setState(prevState => ({ options: { ...prevState.options, stepsLimit: hasLimit ? setStepsLimit : null } }));
+  onStepLimitToggle = () => {
+    this.setState(prevState => ({ options: {
+      ...prevState.options,
+      stepsLimit: prevState.options.stepsLimit ? null : setStepsLimit(prevState.options.size) }
+    }));
   }
 
   onImageSelect = (imageItem) => {
     const { keys, options, validationsErrors } = this.state;
-
+    let invalidImageCount;
+    let updatedKeys;
 
     if (keys.includes(imageItem.key)) {
-      let errors = { ...validationsErrors };
-
-      if ( keys.length - 1 < options.size / 2) {
-        const lackCount = (options.size / 2) - (keys.length - 1);
-
-        errors.invalidImageCount = `You should add atleast ${lackCount} image(s).`;
-      }
-
-      this.setState({ validationsErrors: errors, keys: keys.filter(key => key !== imageItem.key) });
+      invalidImageCount = validateImageCount(keys.length - 1, options.size);
+      updatedKeys = keys.filter(key => key !== imageItem.key);
     } else {
-      this.setState({ keys: keys.concat(imageItem.key) });
+      invalidImageCount = validateImageCount(keys.length + 1, options.size);
+      updatedKeys = keys.concat(imageItem.key);
     }
+
+    this.setState({ validationsErrors: { ...validationsErrors, invalidImageCount }, keys: updatedKeys });
+  }
+
+  isOptionsInvalid() {
+    return !!Object.values(this.state.validationsErrors).filter(item => item).length;
   }
 
   isGameOver() {

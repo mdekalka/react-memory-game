@@ -27,6 +27,8 @@ class GameMenu extends Component {
   }
 
   render() {
+    const stepsLimit = this.props.options.stepsLimit;
+
     return (
       <div className="drawer-container">
         <div className="advanced-menu">
@@ -63,7 +65,7 @@ class GameMenu extends Component {
                   </li>
                 ))}
               </ul>
-              {this.props.errors.invalidImageCount}
+              <div className="notification-message error">{this.props.errors.invalidImageCount}</div>
             </div>
           </div>
           <div className="menu-row">
@@ -72,8 +74,13 @@ class GameMenu extends Component {
               Steps to end:
             </div>
             <div className="menu-row-content">
-              <button onClick={() => this.props.onStepLimitToggle(true)}>On</button>
-              <button onClick={() => this.props.onStepLimitToggle()}>Off</button>
+              <button className={classNames('btn', {'active': stepsLimit})} onClick={this.props.onStepLimitToggle}>
+                {stepsLimit ? 'On' : 'Off'}
+              </button>
+              {
+                stepsLimit &&
+                <div className="notification-message">You will be have only <span className="highlight">{stepsLimit}</span> attempts to finish the game</div>
+              }
             </div>
           </div>
           <div className="menu-row">
