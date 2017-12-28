@@ -23,7 +23,7 @@ export const gameOptions = {
   stepsLimit: null
 };
 
-export const generateBoard = (size = 4, items = []) => {
+export const generateBoard = (size, items) => {
   if (!size || !items.length) {
     return { items };
   }

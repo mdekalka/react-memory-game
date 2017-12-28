@@ -33,15 +33,15 @@ class GameShell extends Component {
   }
 
   componentDidMount() {
-    this.createNewBoard(this.state.options.size, this.state.options.items);
+    this.createNewBoard(this.state.options);
   }
 
   componentWillUnMount() {
     clearTimeout(this.failedAttemptTimeout);
   }
 
-  createNewBoard(boardSize, boardItems) {
-    const board = generateBoard(boardSize, boardItems);
+  createNewBoard(options) {
+    const board = generateBoard(options.size, options.items);
 
     if (board.error) {
       this.setState({ errors: [].concat(board.error), lockedItems: 0 });
