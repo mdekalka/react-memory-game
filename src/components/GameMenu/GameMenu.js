@@ -13,7 +13,8 @@ class GameMenu extends Component {
     onMenuToggle: PropTypes.func,
     onSizeItemClick: PropTypes.func,
     onImageSelect: PropTypes.func,
-    onStepLimitToggle: PropTypes.func
+    onStepLimitToggle: PropTypes.func,
+    isOptionsInvalid: PropTypes.func
   }
 
   static defaultProps = {
@@ -23,11 +24,13 @@ class GameMenu extends Component {
     onMenuToggle: () => {},
     onSizeItemClick: () => {},
     onImageSelect: () => {},
-    onStepLimitToggle: () => {}
+    onStepLimitToggle: () => {},
+    isOptionsInvalid: () => {}
   }
 
   render() {
     const stepsLimit = this.props.options.stepsLimit;
+    const opti = this.props.isOptionsInvalid();
 
     return (
       <div className="drawer-container">

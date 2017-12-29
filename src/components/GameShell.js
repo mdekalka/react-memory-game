@@ -33,20 +33,25 @@ class GameShell extends Component {
   }
 
   componentDidMount() {
-    this.createNewBoard(this.state.options);
+    this.createNewBoard(this.state.options.size, this.state.keys);
   }
 
   componentWillUnMount() {
     clearTimeout(this.failedAttemptTimeout);
   }
 
-  createNewBoard(options) {
-    const board = generateBoard(options.size, options.items);
+  createNewBoard(size, chosenItems) {
+    const board = generateBoard(size, chosenItems);
+    const { options } = this.state;
 
     if (board.error) {
       this.setState({ errors: [].concat(board.error), lockedItems: 0 });
     } else {
-      this.setState({ board: board.items, lockedItems: 0, keys: board.uniqueKeys });
+      this.setState({
+        board: board.items,
+        keys: board.uniqueKeys,
+        lockedItems: 0
+      });
     }
   }
 
@@ -118,7 +123,7 @@ class GameShell extends Component {
   }
 
   onNewGame = () => {
-    this.createNewBoard();
+    this.createNewBoard(this.state.options.size, this.state.keys);
   }
 
   onAdvancedMenuToggle = () => {
@@ -129,11 +134,19 @@ class GameShell extends Component {
     }
 
     this.setState({ isAdvancedMenuOpen: !this.state.isAdvancedMenuOpen });
+    this.createNewBoard(this.state.options.size, this.state.keys);
   }
 
   onSizeItemClick = (size) => {
-    this.setState(prevState => ({ validationsErrors: {}, options: { ...prevState.options, size }}));
-    this.createNewBoard(size, this.state.options.items);
+    this.createNewBoard(size, this.state.keys);
+    this.setState(prevState => ({
+      validationsErrors: {},
+      options: {
+        ...prevState.options,
+        stepsLimit: prevState.options.stepsLimit ? setStepsLimit(size) : prevState.options.stepsLimit,
+        size
+      }
+    }));
   }
 
   onStepLimitToggle = () => {
@@ -159,7 +172,7 @@ class GameShell extends Component {
     this.setState({ validationsErrors: { ...validationsErrors, invalidImageCount }, keys: updatedKeys });
   }
 
-  isOptionsInvalid() {
+  isOptionsInvalid = () => {
     return !!Object.values(this.state.validationsErrors).filter(item => item).length;
   }
 
@@ -211,7 +224,7 @@ class GameShell extends Component {
           </div>
           <GameMenu onMenuToggle={this.onAdvancedMenuToggle} onImageSelect={this.onImageSelect} onSizeItemClick={this.onSizeItemClick}
             onStepLimitToggle={this.onStepLimitToggle} items={predefinedItems} options={this.state.options}
-            errors={this.state.validationsErrors} />
+            errors={this.state.validationsErrors} isOptionsInvalid={this.isOptionsInvalid} />
         </div>
       </div>
     )

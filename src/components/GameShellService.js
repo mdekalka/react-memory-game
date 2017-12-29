@@ -1,4 +1,4 @@
-import { shuffle } from 'lodash';
+import { shuffle, sampleSize } from 'lodash';
 
 import { extendWithId} from '../utils/utils';
 import { itemImages } from './GameAssets';
@@ -20,24 +20,38 @@ const gameItems = generateGameItems(itemImages);
 export const gameOptions = {
   size: BOARD_DEFAULT_SIZE,
   items: gameItems,
-  stepsLimit: null
+  stepsLimit: null,
+  hardcoreMode: false
 };
 
-export const generateBoard = (size, items) => {
-  if (!size || !items.length) {
-    return { items };
+export const generateBoard = (size, chosenKeys) => {
+  if (!size) {
+    return { error: 'Invalid number format'}
   }
 
   if (size % 2 === 0) {
-    if (items.length < size / 2) {
+    const halfSize = size / 2;
+    let selectedItems;
+
+    if (gameItems.length < halfSize) {
       return { error: 'Small number of pictures' };
     }
 
-    const slicedArray = items.slice(0, size / 2);
+    if (chosenKeys.length && chosenKeys.length >= halfSize) {
+      selectedItems = sampleSize(gameItems.filter(item => {
+        if (chosenKeys.includes(item.key)) {
+          return true;
+        }
+
+        return false;
+      }), halfSize);
+    } else {
+      selectedItems = gameItems.slice(0, halfSize);
+    }
 
     return {
-      uniqueKeys: slicedArray.map(item => item.key),
-      items: shuffle([...extendWithId(slicedArray), ...extendWithId(slicedArray)])
+      uniqueKeys: selectedItems.map(item => item.key),
+      items: shuffle([...extendWithId(selectedItems), ...extendWithId(selectedItems)])
     };
   } else {
     return { error: 'Size of the board should even' };
