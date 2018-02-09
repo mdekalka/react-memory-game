@@ -1,0 +1,19 @@
+// Override over ~rc-slider/assets/index.css
+.rc-slider {
+  .rc-slider-handle {
+    background-color: #253c52;
+    border-color: #48accc;
+
+    &:focus {
+      box-shadow: none;
+    }
+  }
+
+  .rc-slider-rail {
+    background-color: #253c52;
+  }
+
+  .rc-slider-track {
+    background-color: #48accc;
+  }
+}

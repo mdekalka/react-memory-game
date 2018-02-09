@@ -2,3 +2,6 @@
   cursor: pointer;
 }
 
+.ellipsis {
+  @include ellipsis;
+}

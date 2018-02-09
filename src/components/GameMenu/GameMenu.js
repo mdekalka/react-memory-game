@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Tooltip } from 'react-tippy';
 
+import MusicSection from '../MusicSection/MusicSection'
+
 import { BOARD_AVAILABLE_SIZES } from '../GameShellService';
+import { musicList } from '../../config/soundAssets'
 
 class GameMenu extends Component {
   static propTypes = {
@@ -26,6 +29,64 @@ class GameMenu extends Component {
     onImageSelect: () => {},
     onStepLimitToggle: () => {},
     isOptionsInvalid: () => {}
+  }
+
+  static VOLUME_LEVEL = 30;
+
+  state = {
+    soundConfig: {
+      activeTrack: null,
+      isPlaying: false,
+      isRandom: false,
+      isLoop: false,
+      volumeLevel: GameMenu.VOLUME_LEVEL
+    }
+  }
+
+  onTrackSelect = (activeTrack) => {
+    this.setState(({ soundConfig }) => ({
+      soundConfig: {
+        ...soundConfig,
+        isPlaying: true,
+        activeTrack
+      }
+    }));
+  }
+
+  onSliderChange = (volumeLevel) => {
+    this.setState(({ soundConfig }) => ({
+      soundConfig: {
+        ...soundConfig,
+        volumeLevel
+      }
+    }));
+  }
+
+  onRandomToggle = () => {
+    this.setState(({ soundConfig }) => ({
+      soundConfig: {
+        ...soundConfig,
+        isRandom: !soundConfig.isRandom
+      }
+    }));
+  }
+
+  onLoopToggle = () => {
+    this.setState(({ soundConfig }) => ({
+      soundConfig: {
+        ...soundConfig,
+        isLoop: !soundConfig.isLoop
+      }
+    }));
+  }
+
+  onVolumeToggle = () => {
+    this.setState(({ soundConfig }) => ({
+      soundConfig: {
+        ...soundConfig,
+        volumeLevel: soundConfig.volumeLevel > 0 ? 0 : GameMenu.VOLUME_LEVEL
+      }
+    }));
   }
 
   render() {
@@ -92,8 +153,7 @@ class GameMenu extends Component {
               Sound:
             </div>
             <div className="menu-row-content">
-              Sound on open/failed/success
-              Music fon Lineage 2 chooser
+              <MusicSection list={musicList} options={this.state.soundConfig} onSliderChange={this.onSliderChange} onHandleTrack={this.onTrackSelect} onRandomToggle={this.onRandomToggle} onLoopToggle={this.onLoopToggle} onVolumeToggle={this.onVolumeToggle} />
             </div>
           </div>
         </div>
