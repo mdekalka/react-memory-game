@@ -27,19 +27,27 @@ class MusicSection extends Component {
   static propTypes = {
     options: PropTypes.object,
     onHandleTrack: PropTypes.func,
-    onSliderChange: PropTypes.func,
+    onVolumeChange: PropTypes.func,
     onRandomToggle: PropTypes.func,
     onLoopToggle: PropTypes.func,
-    onVolumeToggle: PropTypes.func
+    onVolumeToggle: PropTypes.func,
+    onEnded: PropTypes.func,
+    onSeekChange: PropTypes.func,
+    onDuration: PropTypes.func,
+    onProgress: PropTypes.func
   }
 
   static defaultProps = {
     options: {},
     onHandleTrack: () => {},
-    onSliderChange: () => {},
+    onVolumeChange: () => {},
     onRandomToggle: () => {},
     onLoopToggle: () => {},
-    onVolumeToggle: () => {}
+    onVolumeToggle: () => {},
+    onEnded: () => {},
+    onSeekChange: () => {},
+    onDuration: () => {},
+    onProgress: () => {}
   }
 
   render() {
@@ -58,13 +66,21 @@ class MusicSection extends Component {
                 <i className={`icon fa fa-repeat ${options.isLoop && 'active'}`} onClick={this.props.onLoopToggle} aria-hidden="true"></i>
                 <div className="volume-select">
                   <div className="volume-control">
-                    <Slider vertical min={0} max={100} value={options.volumeLevel} onChange={this.props.onSliderChange} />
+                    <Slider vertical min={0} max={100} value={options.isMuted ? 0 : options.volumeLevel} onChange={this.props.onVolumeChange} />
                   </div>
-                  <i className={`icon fa-fw fa fa-volume-${options.volumeLevel ? 'up' : 'off'}`} onClick={this.props.onVolumeToggle} aria-hidden="true"></i>
+                  <i className={`icon fa-fw fa fa-volume-${options.isMuted ? 'off' : 'up'}`} onClick={this.props.onVolumeToggle} aria-hidden="true"></i>
                 </div>
               </div>
             </div>
-            {/* <Slider min={0} max={100} defaultValue={options.volumeLevel} handle={handle} onChange={this.props.onSliderChange} /> */}
+            <Slider 
+              className='track-seek'
+              min={0}
+              max={100}
+              value={Math.round(options.played * 100)}
+              width={'100%'}
+              onBeforeChange={this.props.onSeekMouseDown}
+              onChange={this.props.onSeekChange}
+              onAfterChange={this.props.onSeekMouseUp} />
           </div>
         }
 
@@ -81,7 +97,18 @@ class MusicSection extends Component {
         </ul>
         {
           options.activeTrack &&
-          <ReactPlayer playing={options.isPlaying} loop={options.isLoop} volume={options.volumeLevel / 100} url={options.activeTrack.src} width={'100%'} height={'20px'} />
+          <ReactPlayer 
+            ref={this.props.inputRef}
+            playing={options.isPlaying}
+            loop={options.isLoop}
+            volume={options.isMuted ? 0 : options.volumeLevel / 100}
+            url={options.activeTrack.src}
+            muted={options.isMuted}
+            onDuration={this.props.onDuration}
+            onProgress={this.props.onProgress}
+            onEnded={this.props.onEnded}
+            width={'100%'}
+            height={'20px'} />
         }
       </div>
     )

@@ -31,62 +31,107 @@ class GameMenu extends Component {
     isOptionsInvalid: () => {}
   }
 
-  static VOLUME_LEVEL = 30;
+  static VOLUME_LEVEL = 10;
 
   state = {
     soundConfig: {
+      duration: 0,
+      played: 0,
+      seeking: false,
       activeTrack: null,
       isPlaying: false,
       isRandom: false,
       isLoop: false,
+      isMuted: false,
       volumeLevel: GameMenu.VOLUME_LEVEL
     }
   }
 
+  onSoundConfigChange(config) {
+    this.setState(({ soundConfig }) => ({
+      soundConfig: {
+        ...soundConfig,
+        ...config
+      }
+    }));
+  }
+
   onTrackSelect = (activeTrack) => {
-    this.setState(({ soundConfig }) => ({
-      soundConfig: {
-        ...soundConfig,
-        isPlaying: true,
-        activeTrack
-      }
-    }));
+    this.onSoundConfigChange({
+      isPlaying: true,
+      activeTrack
+    });
   }
 
-  onSliderChange = (volumeLevel) => {
-    this.setState(({ soundConfig }) => ({
-      soundConfig: {
-        ...soundConfig,
-        volumeLevel
-      }
-    }));
-  }
-
-  onRandomToggle = () => {
-    this.setState(({ soundConfig }) => ({
-      soundConfig: {
-        ...soundConfig,
-        isRandom: !soundConfig.isRandom
-      }
-    }));
-  }
-
-  onLoopToggle = () => {
-    this.setState(({ soundConfig }) => ({
-      soundConfig: {
-        ...soundConfig,
-        isLoop: !soundConfig.isLoop
-      }
-    }));
+  onVolumeChange = (volumeLevel) => {
+    this.onSoundConfigChange({
+      volumeLevel,
+      isMuted: volumeLevel === 0 ? true : false
+    });
   }
 
   onVolumeToggle = () => {
-    this.setState(({ soundConfig }) => ({
-      soundConfig: {
-        ...soundConfig,
-        volumeLevel: soundConfig.volumeLevel > 0 ? 0 : GameMenu.VOLUME_LEVEL
-      }
-    }));
+    const { isMuted } = this.state.soundConfig;
+
+    this.onSoundConfigChange({
+      isMuted: !isMuted
+    });
+  }
+
+  onRandomToggle = () => {
+    const { isRandom } = this.state.soundConfig;
+
+    this.onSoundConfigChange({
+      isRandom: !isRandom
+    });
+  }
+
+  onLoopToggle = () => {
+    const { isLoop } = this.state.soundConfig;
+    
+    this.onSoundConfigChange({
+      isLoop: !isLoop
+    });
+  }
+
+  onSeekMouseDown = () => {
+    this.onSoundConfigChange({
+      seeking: true
+    });
+  }
+
+  onSeekChange = (value) => {
+    this.onSoundConfigChange({
+      played: value / 100
+    });
+  }
+
+  onSeekMouseUp = (value) => {
+    this.onSoundConfigChange({
+      seeking: false
+    });
+
+    this.player.seekTo(value / 100)
+  }
+
+  onDuration = (duration) => {
+    this.onSoundConfigChange({
+      duration
+    });
+  }
+
+  onProgress = (state) => {
+    const { seeking } = this.state.soundConfig;
+
+    if (!seeking) {
+      this.onSoundConfigChange({
+        ...state
+      });
+    }
+  }
+
+  onEnded = (a) => {
+    debugger
   }
 
   render() {
@@ -153,7 +198,21 @@ class GameMenu extends Component {
               Sound:
             </div>
             <div className="menu-row-content">
-              <MusicSection list={musicList} options={this.state.soundConfig} onSliderChange={this.onSliderChange} onHandleTrack={this.onTrackSelect} onRandomToggle={this.onRandomToggle} onLoopToggle={this.onLoopToggle} onVolumeToggle={this.onVolumeToggle} />
+              <MusicSection 
+                inputRef={player => this.player = player}
+                list={musicList}
+                options={this.state.soundConfig}
+                onVolumeChange={this.onVolumeChange}
+                onHandleTrack={this.onTrackSelect}
+                onRandomToggle={this.onRandomToggle}
+                onLoopToggle={this.onLoopToggle}
+                onVolumeToggle={this.onVolumeToggle}
+                onEnded={this.onEnded}
+                onDuration={this.onDuration}
+                onProgress={this.onProgress}
+                onSeekMouseDown={this.onSeekMouseDown}
+                onSeekMouseUp={this.onSeekMouseUp}
+                onSeekChange={this.onSeekChange} />
             </div>
           </div>
         </div>
