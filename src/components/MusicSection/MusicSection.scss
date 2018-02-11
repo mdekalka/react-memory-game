@@ -5,9 +5,14 @@
     margin-bottom: 12px;
   }
 
+  .track-play-control {
+    flex-shrink: 0;
+  }
+
   .track-icon {
     width: 40px;
     margin-right: 8px;
+    border-radius: 4px;
   }
 
   .track-tools {
@@ -59,3 +64,29 @@
     transition: opacity .1s ease;
   }
 }
+
+.sound-list {
+  margin-top: 15px;
+
+  .sound-item {
+    font-size: 14px;
+    margin: 10px 0;
+
+    .icon {
+      font-size: 12px;
+    }
+
+    &:hover,
+    &.active {
+      color: #48accc;
+    }
+  }
+}
+
+.track-time {
+  display: flex;
+  justify-content: space-between;
+  text-align: right;
+  font-size: 13px;
+}
+

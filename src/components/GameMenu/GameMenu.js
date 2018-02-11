@@ -31,20 +31,21 @@ class GameMenu extends Component {
     isOptionsInvalid: () => {}
   }
 
-  static VOLUME_LEVEL = 10;
+  static VOLUME_LEVEL = 1;
 
   state = {
     soundConfig: {
       duration: 0,
       played: 0,
       seeking: false,
-      activeTrack: null,
+      activeTrack: musicList[0],
       isPlaying: false,
       isRandom: false,
       isLoop: false,
       isMuted: false,
       volumeLevel: GameMenu.VOLUME_LEVEL
-    }
+    },
+    musicList
   }
 
   onSoundConfigChange(config) {
@@ -56,11 +57,22 @@ class GameMenu extends Component {
     }));
   }
 
-  onTrackSelect = (activeTrack) => {
-    this.onSoundConfigChange({
-      isPlaying: true,
-      activeTrack
-    });
+  onHandleTrack = (track) => {
+    const { isPlaying, activeTrack } = this.state.soundConfig;
+
+    // clicked on the same track
+    if (activeTrack && activeTrack.id === track.id) {
+      this.onSoundConfigChange({
+        isPlaying: !isPlaying
+      });
+    } else {
+      this.onSoundConfigChange({
+        isPlaying: true,
+        activeTrack: track,
+        duration: 0,
+        played: 0,
+      });
+    }
   }
 
   onVolumeChange = (volumeLevel) => {
@@ -125,13 +137,42 @@ class GameMenu extends Component {
 
     if (!seeking) {
       this.onSoundConfigChange({
-        ...state
+        played: state.played
       });
     }
   }
 
+  onTrackMove = (isForward) => {
+    const { activeTrack } = this.state.soundConfig;
+    const currentIndex = this.state.musicList.findIndex(soundItem => soundItem.id === activeTrack.id);
+
+    if (isForward) {
+      let index = 0;
+
+      if (currentIndex < this.state.musicList.length - 1) {
+        index = currentIndex + 1;
+      }
+
+      this.onSoundConfigChange({
+        activeTrack: musicList[index]
+      });
+    } else {
+      if (currentIndex !== 0) {
+        this.onSoundConfigChange({
+          activeTrack: musicList[currentIndex - 1]
+        });
+      }
+    }
+  }
+
   onEnded = (a) => {
-    debugger
+    const { isLoop } = this.state.soundConfig;
+
+    if (isLoop) {
+
+    } else {
+      
+    }
   }
 
   render() {
@@ -200,10 +241,10 @@ class GameMenu extends Component {
             <div className="menu-row-content">
               <MusicSection 
                 inputRef={player => this.player = player}
-                list={musicList}
+                list={this.state.musicList}
                 options={this.state.soundConfig}
                 onVolumeChange={this.onVolumeChange}
-                onHandleTrack={this.onTrackSelect}
+                onHandleTrack={this.onHandleTrack}
                 onRandomToggle={this.onRandomToggle}
                 onLoopToggle={this.onLoopToggle}
                 onVolumeToggle={this.onVolumeToggle}
@@ -212,7 +253,8 @@ class GameMenu extends Component {
                 onProgress={this.onProgress}
                 onSeekMouseDown={this.onSeekMouseDown}
                 onSeekMouseUp={this.onSeekMouseUp}
-                onSeekChange={this.onSeekChange} />
+                onSeekChange={this.onSeekChange}
+                onTrackMove={this.onTrackMove} />
             </div>
           </div>
         </div>
