@@ -7,7 +7,6 @@ import MenuSection from '../MenuSection/MenuSection';
 import SoundSection from '../SoundSection/SoundSection';
 
 import { BOARD_AVAILABLE_SIZES } from '../GameShellService';
-import { musicList } from '../../config/soundAssets';
 
 class GameMenu extends Component {
   static propTypes = {

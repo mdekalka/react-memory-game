@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class MenuSection extends Component {
-  static defaultProps = {
-    header: PropTypes.oneOfType([PropTypes.string])
+  static propTypes = {
+    header: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
   }
 
-  static propTypes = {
+  static defaultProps = {
     header: 'Section'
   }
 

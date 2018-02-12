@@ -56,8 +56,17 @@ class SoundPlayer extends Component {
               onVolumeChange={this.props.onVolumeChange}
               onVolumeToggle={this.props.onVolumeToggle} />
           } />
-        <ProgressControl config={config} />
-        <Player config={config} onDuration={this.props.onDuration} onProgress={this.props.onProgress} onEnded={this.props.onEnded} />
+        <ProgressControl
+          config={config}
+          onSeekMouseDown={this.props.onSeekMouseDown}
+          onSeekChange={this.props.onSeekChange}
+          onSeekMouseUp={this.props.onSeekMouseUp} />
+        <Player 
+          playerRef={this.props.playerRef}
+          config={config}
+          onDuration={this.props.onDuration}
+          onProgress={this.props.onProgress}
+          onEnded={this.props.onEnded} />
       </div>
     )
   }

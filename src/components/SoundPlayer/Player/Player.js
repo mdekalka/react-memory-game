@@ -23,17 +23,17 @@ class Player extends Component {
     return (
         !!config.activeTrack &&
         <ReactPlayer
-                ref={this.props.inputRef}
-                playing={config.isPlaying}
-                loop={config.isLoop}
-                volume={config.isMuted ? 0 : config.volumeLevel / 100}
-                url={config.activeTrack.src}
-                muted={config.isMuted}
-                onDuration={this.props.onDuration}
-                onProgress={this.props.onProgress}
-                onEnded={this.props.onEnded}
-                width={'100%'}
-                height={'20px'} />
+          ref={this.props.playerRef}
+          playing={config.isPlaying}
+          loop={config.isLoop}
+          volume={config.isMuted ? 0 : config.volumeLevel / 100}
+          url={config.activeTrack.src}
+          muted={config.isMuted}
+          onDuration={this.props.onDuration}
+          onProgress={this.props.onProgress}
+          onEnded={this.props.onEnded}
+          width={'100%'}
+          height={'20px'} />
     )
   }
 }
