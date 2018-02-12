@@ -1,15 +1,3 @@
-@keyframes piu {
-  0% {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .track-container {
   .track-info {
     display: flex;
@@ -25,10 +13,6 @@
     width: 40px;
     margin-right: 8px;
     border-radius: 4px;
-  }
-
-  .track-title {
-    animation: piu .4s ease;
   }
 
   .track-tools {
@@ -108,4 +92,3 @@
   text-align: right;
   font-size: 13px;
 }
-

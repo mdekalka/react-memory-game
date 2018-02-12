@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import classNames from 'classnames';
-import { Tooltip } from 'react-tippy';
 
 import {
   BOARD_AVAILABLE_SIZES,

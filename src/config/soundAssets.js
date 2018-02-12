@@ -1,7 +1,7 @@
 import dionTheme from '../assets/sounds/Dion_Theme.mp3'
 import hunterVillageTheme from '../assets/sounds/Hunter_Village_Theme.mp3'
 import afterTheStorm from '../assets/sounds/After_The_Storm.mp3'
-import battleTheme3 from '../assets/sounds/Battle_Theme_3.mp3' 
+import battleTheme3 from '../assets/sounds/Battle_Theme_3.mp3'
 import crossroadAtDawn from '../assets/sounds/Crossroad_At_Dawn.mp3'
 import elvenVillageTheme from '../assets/sounds/Elven_Village_Theme.mp3'
 import floranTheme from '../assets/sounds/Floran_Theme.mp3'
@@ -56,7 +56,7 @@ export const musicList = [
   },
   {
     id: 7,
-    name: 'FloranTheme',
+    name: 'Floran Theme',
     key: 'floran-theme',
     src: floranTheme,
     icon: icon
