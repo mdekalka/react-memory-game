@@ -1,7 +1,23 @@
-.tippy-popper {
-  font-family: Helvetica, Arial, sans-serif;
+$orientation: 'top', 'right', 'bottom', 'left';
+
+@mixin tooltipColor($direction: top, $color: #000) {
+  &.rc-slider-tooltip-placement-#{$direction} {
+    .rc-slider-tooltip-arrow {
+      border-#{$direction}-color: $color;
+    }
+  }
 }
 
-.tippy-tooltip {
-  background-color: #000;
+.rc-slider-tooltip {
+  @each $pos in $orientation {
+    @include tooltipColor($pos);
+  }
+
+  .rc-slider-tooltip-inner {
+    padding: 6px 4px;
+    height: auto;
+    background-color: #000;
+    box-shadow: none;
+    font-size: 12px;
+  }
 }

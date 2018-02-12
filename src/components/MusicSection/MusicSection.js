@@ -1,30 +1,15 @@
 import React, { Component } from 'react';
-import moment from 'moment';
-import momentDurationFormatSetup  from 'moment-duration-format'
 import PropTypes from 'prop-types';
+import Transition from 'react-transition-group/Transition';
 import ReactPlayer from 'react-player'
 import Slider from 'rc-slider';
-import Tooltip from 'rc-tooltip';
+import moment from 'moment';
+import momentDurationFormatSetup  from 'moment-duration-format'
 
 import './MusicSection.scss';
 
 momentDurationFormatSetup(moment)
-
-const Handle = Slider.Handle;
-const handle = (props) => {
-  const { value, dragging, index, ...restProps } = props;
-  return (
-    <Tooltip
-      prefixCls="rc-slider-tooltip"
-      overlay={value}
-      visible={dragging}
-      placement="top"
-      key={index}
-    >
-      <Handle value={value} {...restProps} />
-    </Tooltip>
-  );
-};
+const SliderWithTooltip = Slider.createSliderWithTooltip(Slider);
 
 class MusicSection extends Component {
   static propTypes = {
@@ -68,6 +53,16 @@ class MusicSection extends Component {
   render() {
     const { options } = this.props;
 
+    const defaultStyle = {
+      transition: `opacity .2s ease-in-out`,
+      opacity: 0,
+    }
+
+    const transitionStyles = {
+      entering: { opacity: 0 },
+      entered:  { opacity: 1 },
+    };
+
     return (
       <div>
         {
@@ -76,15 +71,20 @@ class MusicSection extends Component {
             <div className="track-info">
               <img className="track-icon" src={options.activeTrack.icon} alt="track preview" />
               <div className="track-play-control">
-                <i 
+                <i
                   className={`icon fa fa-fw fa-${options.isPlaying ? 'pause' : 'play'}`}
                   onClick={() => this.props.onHandleTrack(options.activeTrack)}
                   aria-hidden="true">
                 </i>
-                <i className="icon fa fa-step-backward" onClick={this.props.onTrackMove} aria-hidden="true"></i>
+                <i className="icon fa fa-step-backward" onClick={() => this.props.onTrackMove()} aria-hidden="true"></i>
                 <i className="icon fa fa-step-forward" onClick={() => this.props.onTrackMove(true)} aria-hidden="true"></i>
               </div>
-              <div className="track-title ellipsis">{options.activeTrack.name}</div>
+              {/* <Transition in={!!options.activeTrack.name} timeout={100} >
+                {(state) => (
+                  <div style={{...defaultStyle, ...transitionStyles[state]}} className="track-title ellipsis">{options.activeTrack.name}</div>
+                )}
+
+              </Transition> */}
               <div className="track-tools">
                 <i className={`icon fa fa-random ${options.isRandom && 'active'}`} onClick={this.props.onRandomToggle} aria-hidden="true"></i>
                 <i className={`icon fa fa-repeat ${options.isLoop && 'active'}`} onClick={this.props.onLoopToggle} aria-hidden="true"></i>
@@ -98,13 +98,14 @@ class MusicSection extends Component {
             </div>
             <div className="track-time">
               <time>{this.formatTime(options.duration * options.played)}</time>
-              <time>{this.formatTime(options.duration)}</time>
+              <time>{!!options.duration && this.formatTime(options.duration)}</time>
             </div>
-            <Slider 
+            <SliderWithTooltip
               className='track-seek'
               min={0}
               max={100}
               value={Math.round(options.played * 100)}
+              tipFormatter={() => this.formatTime(options.duration * options.played)}
               width={'100%'}
               onBeforeChange={this.props.onSeekMouseDown}
               onChange={this.props.onSeekChange}
@@ -125,7 +126,7 @@ class MusicSection extends Component {
         </ul>
         {
           options.activeTrack &&
-          <ReactPlayer 
+          <ReactPlayer
             ref={this.props.inputRef}
             playing={options.isPlaying}
             loop={options.isLoop}

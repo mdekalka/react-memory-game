@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Tooltip } from 'react-tippy';
+import sample from 'lodash/sample';
 
 import MusicSection from '../MusicSection/MusicSection'
 
@@ -31,7 +32,7 @@ class GameMenu extends Component {
     isOptionsInvalid: () => {}
   }
 
-  static VOLUME_LEVEL = 1;
+  static VOLUME_LEVEL = 0;
 
   state = {
     soundConfig: {
@@ -57,6 +58,15 @@ class GameMenu extends Component {
     }));
   }
 
+  setActiveTrack(track) {
+    this.onSoundConfigChange({
+      isPlaying: true,
+      activeTrack: track,
+      duration: 0,
+      played: 0,
+    });
+  }
+
   onHandleTrack = (track) => {
     const { isPlaying, activeTrack } = this.state.soundConfig;
 
@@ -66,12 +76,7 @@ class GameMenu extends Component {
         isPlaying: !isPlaying
       });
     } else {
-      this.onSoundConfigChange({
-        isPlaying: true,
-        activeTrack: track,
-        duration: 0,
-        played: 0,
-      });
+      this.setActiveTrack(track);
     }
   }
 
@@ -94,15 +99,17 @@ class GameMenu extends Component {
     const { isRandom } = this.state.soundConfig;
 
     this.onSoundConfigChange({
-      isRandom: !isRandom
+      isRandom: !isRandom,
+      isLoop: false
     });
   }
 
   onLoopToggle = () => {
     const { isLoop } = this.state.soundConfig;
-    
+
     this.onSoundConfigChange({
-      isLoop: !isLoop
+      isLoop: !isLoop,
+      isRandom: false
     });
   }
 
@@ -154,24 +161,40 @@ class GameMenu extends Component {
       }
 
       this.onSoundConfigChange({
-        activeTrack: musicList[index]
+        activeTrack: musicList[index],
+        duration: 0,
+        played: 0
       });
     } else {
       if (currentIndex !== 0) {
         this.onSoundConfigChange({
-          activeTrack: musicList[currentIndex - 1]
+          activeTrack: musicList[currentIndex - 1],
+          duration: 0,
+          played: 0
         });
       }
     }
   }
 
-  onEnded = (a) => {
-    const { isLoop } = this.state.soundConfig;
+  getIndexesExpectCurrent() {
+    const { activeTrack } = this.state.soundConfig;
 
-    if (isLoop) {
+    return this.state.musicList
+      .filter(soundItem => soundItem.id !== activeTrack.id)
+      .map(soundItem => soundItem.id);
+  }
 
-    } else {
-      
+  onEnded = () => {
+    const { isLoop, isRandom } = this.state.soundConfig;
+    const indexesExpectCurrent = this.getIndexesExpectCurrent();
+
+    if (isRandom) {
+      const nextTrackId = sample(indexesExpectCurrent);
+      const nextTrack = this.state.musicList.find(soundItem => soundItem.id === nextTrackId);
+
+      this.setActiveTrack(nextTrack);
+    } else if (!isLoop) {
+      this.onTrackMove(true);
     }
   }
 
@@ -239,7 +262,7 @@ class GameMenu extends Component {
               Sound:
             </div>
             <div className="menu-row-content">
-              <MusicSection 
+              <MusicSection
                 inputRef={player => this.player = player}
                 list={this.state.musicList}
                 options={this.state.soundConfig}
