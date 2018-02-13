@@ -1,7 +1,7 @@
 import { shuffle, sampleSize } from 'lodash';
 
-import { extendWithId} from '../utils/utils';
-import { itemImages } from '../config/cardsAssets';
+import { extendWithId} from '../../utils/utils';
+import { itemImages } from '../../config/cardsAssets';
 
 // export const BOARD_AVAILABLE_SIZES = [10, 12, 14, 16];
 export const BOARD_SIZES = {

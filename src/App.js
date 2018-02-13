@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import GameShell from './components/GameShell';
+import GameShell from './components/GameShell/GameShell';
 import './App.css';
 
 class App extends Component {

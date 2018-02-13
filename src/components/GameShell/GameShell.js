@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import classNames from 'classnames';
 
 import {
-  BOARD_AVAILABLE_SIZES,
+  BOARD_SIZES,
   gameOptions,
   generateBoard,
   setStepsLimit,
   defineSelectedItems,
   validateImageCount,
   validateOptions } from './GameShellService';
-import GameMenu from './GameMenu/GameMenu';
+import GameMenu from '../GameMenu/GameMenu';
 
 import './GameShell.scss';
 
@@ -244,6 +244,7 @@ class GameShell extends Component {
             items={predefinedItems}
             isOpen={this.state.isAdvancedMenuOpen}
             open={this.props.isAdvancedMenuOpen}
+            boardSizes={BOARD_SIZES}
             options={this.state.options}
             errors={this.state.validationsErrors}
             isOptionsInvalid={this.isOptionsInvalid} />

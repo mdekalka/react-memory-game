@@ -10,14 +10,13 @@ import HardmodeSection from '../HardmodeSection/HardmodeSection';
 import BoardSizeSection from '../BoardSizeSection/BoardSizeSection';
 import BoardImageSection from '../BoardImageSection/BoardImageSection';
 
-import { BOARD_SIZES } from '../GameShellService';
-
 class GameMenu extends Component {
   static propTypes = {
     isOpen: PropTypes.bool,
     items: PropTypes.array,
     options: PropTypes.object,
     errors: PropTypes.object,
+    boardSizes: PropTypes.object,
     onMenuToggle: PropTypes.func,
     onSizeItemClick: PropTypes.func,
     onImageSelect: PropTypes.func,
@@ -31,6 +30,7 @@ class GameMenu extends Component {
     items: [],
     options: {},
     errors: {},
+    boardSizes: {},
     onMenuToggle: () => {},
     onSizeItemClick: () => {},
     onImageSelect: () => {},
@@ -46,7 +46,7 @@ class GameMenu extends Component {
       <Drawer open={this.props.isOpen} onMenuToggle={this.props.onMenuToggle} title="Save and Back">
         <Fragment>
           <MenuSection header={<Fragment><i className="fa fa-th-large" aria-hidden="true"></i>Board size:</Fragment>}>
-            <BoardSizeSection sizes={BOARD_SIZES} size={this.props.options.size} onSizeItemClick={this.props.onSizeItemClick} />
+            <BoardSizeSection sizes={this.props.boardSizes} size={this.props.options.size} onSizeItemClick={this.props.onSizeItemClick} />
           </MenuSection>
 
           <MenuSection header={<Fragment><i className="fa fa-picture-o" aria-hidden="true"></i>Board images:</Fragment>}>
