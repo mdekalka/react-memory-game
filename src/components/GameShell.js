@@ -11,7 +11,7 @@ import {
   validateOptions } from './GameShellService';
 import GameMenu from './GameMenu/GameMenu';
 
-import './GamShell.scss';
+import './GameShell.scss';
 
 class GameShell extends Component {
   static MAX_COUNT = 2;
@@ -27,7 +27,7 @@ class GameShell extends Component {
     lockedItems: 0,
     errors: [],
     validationsErrors: {},
-    isAdvancedMenuOpen: true,
+    isAdvancedMenuOpen: false,
     options: gameOptions
   }
 
@@ -41,10 +41,9 @@ class GameShell extends Component {
 
   createNewBoard(size, chosenItems) {
     const board = generateBoard(size, chosenItems);
-    const { options } = this.state;
 
     if (board.error) {
-      this.setState({ errors: [].concat(board.error), lockedItems: 0 });
+      this.setState({ errors: [].concat(board.error) });
     } else {
       this.setState({
         board: board.items,
@@ -155,6 +154,15 @@ class GameShell extends Component {
     }));
   }
 
+  onRandomizeCellsToggle = () => {
+    this.setState(({ options }) => ({
+      options: {
+        ...options,
+        randomizeCells: !options.randomizeCells
+      }
+    }));
+  }
+
   onImageSelect = (imageItem) => {
     const { keys, options, validationsErrors } = this.state;
     let invalidImageCount;
@@ -180,6 +188,7 @@ class GameShell extends Component {
   }
 
   render() {
+    const { options } = this.state;
     const isGameOver = this.isGameOver();
     const predefinedItems = defineSelectedItems(this.state.keys);
 
@@ -215,15 +224,29 @@ class GameShell extends Component {
             </div>
           }
         </div>
-        <div className={classNames('board-menu', {'open': this.state.isAdvancedMenuOpen})}>
-          <div className="board-options">
-            <div className="menu-row-title nav-btn pointer" onClick={this.onAdvancedMenuToggle}>Advanced options: <i className="fa fa-angle-double-right" aria-hidden="true"></i></div>
-            <div>All attempts: {this.state.allAtempts}</div>
-            <div>Opened items: {this.state.lockedItems}</div>
+        <div className="board-menu">
+          <div className="menu-row-title nav-btn pointer" onClick={this.onAdvancedMenuToggle}>
+            Advanced options:
+            <i className="fa fa-angle-double-right" aria-hidden="true"></i>
           </div>
-          <GameMenu onMenuToggle={this.onAdvancedMenuToggle} onImageSelect={this.onImageSelect} onSizeItemClick={this.onSizeItemClick}
-            onStepLimitToggle={this.onStepLimitToggle} items={predefinedItems} options={this.state.options}
-            errors={this.state.validationsErrors} isOptionsInvalid={this.isOptionsInvalid} />
+          <div className="board-information">
+            <div>All attempts: {this.state.allAtempts}</div>
+            <div>Cards left: {this.state.allAtempts}</div>
+            {!!options.stepsLimit && <div>{this.state.allAtempts} attempt(s) left</div>}
+            {options.randomizeCells && <div>Randomize cells: <span className="highlight">on</span></div>}
+          </div>
+          <GameMenu
+            onMenuToggle={this.onAdvancedMenuToggle}
+            onImageSelect={this.onImageSelect}
+            onSizeItemClick={this.onSizeItemClick}
+            onStepLimitToggle={this.onStepLimitToggle}
+            onRandomizeCellsToggle={this.onRandomizeCellsToggle}
+            items={predefinedItems}
+            isOpen={this.state.isAdvancedMenuOpen}
+            open={this.props.isAdvancedMenuOpen}
+            options={this.state.options}
+            errors={this.state.validationsErrors}
+            isOptionsInvalid={this.isOptionsInvalid} />
         </div>
       </div>
     )

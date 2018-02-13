@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import './MenuSection.scss';
+
 class MenuSection extends Component {
   static propTypes = {
     header: PropTypes.oneOfType([PropTypes.element, PropTypes.string])

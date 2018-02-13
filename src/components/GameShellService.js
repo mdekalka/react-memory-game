@@ -1,10 +1,17 @@
 import { shuffle, sampleSize } from 'lodash';
 
 import { extendWithId} from '../utils/utils';
-import { itemImages } from './GameAssets';
+import { itemImages } from '../config/cardsAssets';
 
-export const BOARD_AVAILABLE_SIZES = [10, 12, 14, 16];
-const BOARD_DEFAULT_SIZE = BOARD_AVAILABLE_SIZES[0];
+// export const BOARD_AVAILABLE_SIZES = [10, 12, 14, 16];
+export const BOARD_SIZES = {
+  small: [8, 10, 12],
+  medium: [14, 16, 18],
+  large: [20, 22 ,24]
+}
+
+// const BOARD_DEFAULT_SIZE = BOARD_SIZES.small[1];
+const BOARD_DEFAULT_SIZE = 2;
 
 const generateGameItems = (items) => {
   return Object.keys(items).map(item => {
@@ -21,7 +28,7 @@ export const gameOptions = {
   size: BOARD_DEFAULT_SIZE,
   items: gameItems,
   stepsLimit: null,
-  hardcoreMode: false
+  randomizeCells: false
 };
 
 export const generateBoard = (size, chosenKeys) => {

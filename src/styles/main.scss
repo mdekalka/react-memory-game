@@ -4,6 +4,7 @@ $fa-font-path: '~font-awesome/fonts';
 @import '~normalize-scss/sass/normalize/import-now';
 @import '~rc-slider/assets/index.css';
 @import '~rc-tooltip/assets/bootstrap_white.css';
+@import '~react-toggle/style.css';
 
 @import 'mixins';
 @import 'fonts';
@@ -11,7 +12,12 @@ $fa-font-path: '~font-awesome/fonts';
 @import 'utils';
 @import 'layout';
 @import 'buttons';
-@import 'tooltips';
 @import 'icons';
 
-@import 'slider';
+/* overrides */
+@import 'override/slider';
+@import 'override/tooltips';
+@import 'override/react-toggle';
+
+
+@import 'section';
