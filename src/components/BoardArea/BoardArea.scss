@@ -1,0 +1,10 @@
+.board-container {
+  position: relative;
+  overflow: hidden;
+
+  .board-list {
+    display: flex;
+    width: 560px;
+    flex-wrap: wrap;
+  }
+}

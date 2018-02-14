@@ -1,71 +1,73 @@
 import React, { Component } from 'react';
-import classNames from 'classnames';
 
 import {
   BOARD_SIZES,
   gameOptions,
   generateBoard,
   setStepsLimit,
-  defineSelectedItems,
-  validateImageCount,
-  validateOptions } from './GameShellService';
+  isImageCountValid,
+  defineSelectedImages } from './GameShellService';
+
 import GameMenu from '../GameMenu/GameMenu';
+import BoardArea from '../BoardArea/BoardArea';
+import GameOver from '../GameOver/GameOver';
 
 import './GameShell.scss';
 
 class GameShell extends Component {
   static MAX_COUNT = 2;
-  static BOARD_ITEMS = 4;
   static ANIMATION_TIMEOUT = 1000;
 
   state = {
     board: [],
-    keys: [],
+    cardKeys: [],
     shownCount: 0,
     openedItemKeys: [],
     allAtempts: 0,
     lockedItems: 0,
-    errors: [],
+    boardError: '',
     validationsErrors: {},
-    isAdvancedMenuOpen: false,
+    isAdvancedMenuOpen: true,
     options: gameOptions
   }
 
   componentDidMount() {
-    this.createNewBoard(this.state.options.size, this.state.keys);
+    this.createBoard(this.state.options.size, this.state.cardKeys);
   }
 
   componentWillUnMount() {
     clearTimeout(this.failedAttemptTimeout);
   }
 
-  createNewBoard(size, chosenItems) {
+  createBoard(size, chosenItems) {
     const board = generateBoard(size, chosenItems);
 
     if (board.error) {
-      this.setState({ errors: [].concat(board.error) });
+      this.setState({ boardError: board.error });
     } else {
       this.setState({
         board: board.items,
-        keys: board.uniqueKeys,
-        lockedItems: 0
+        cardKeys: board.uniqueKeys
       });
+
+      this.resetBoardCounts();
     }
   }
 
-  resetCurrentBoard() {
-    this.setState(prevState => {
-      return {
-        board: prevState.board.map(item => ({ _id: item._id, key: item.key, image: item.image })),
-        shownCount: 0,
-        openedItemKeys: [],
-        allAtempts: 0,
-        lockedItems: 0,
-      }
+  resetBoardCounts() {
+    this.setState({
+      shownCount: 0,
+      allAtempts: 0,
+      lockedItems: 0,
+      openedItemKeys: []
     })
   }
 
   onBoardItemClick = ({ _id, key }) => {
+    // TODO: refactor this to more readable format
+    // TODO: remove showCount - you can use openedItemKeys length for this
+
+    // Set chosen card to [open] state, increase show count by 1
     if (this.state.shownCount < GameShell.MAX_COUNT) {
       this.setState(prevState => {
         return {
@@ -80,7 +82,9 @@ class GameShell extends Component {
           shownCount: ++prevState.shownCount
         }
       }, () => {
+        // Two cards are opened:
         if (this.state.openedItemKeys.length === GameShell.MAX_COUNT) {
+          // If two card equals - lock them and increase attempts by 1
           if (this.state.openedItemKeys[0] === this.state.openedItemKeys[this.state.openedItemKeys.length - 1]) {
             this.setState(prevState => {
               return {
@@ -98,6 +102,7 @@ class GameShell extends Component {
               }
             })
           } else {
+            // If two cards are not equals - remove [open] state from them and clear count/attempts counts
             this.failedAttemptTimeout = setTimeout(() => {
               this.setState(prevState => {
                 return {
@@ -121,22 +126,22 @@ class GameShell extends Component {
   }
 
   onNewGame = () => {
-    this.createNewBoard(this.state.options.size, this.state.keys);
+    this.createBoard(this.state.options.size, this.state.cardKeys);
   }
 
   onAdvancedMenuToggle = () => {
-    const { isAdvancedMenuOpen } = this.state;
+    const hasErrors = this.hasValidationErrors();
 
-    if (!isAdvancedMenuOpen) {
-      this.resetCurrentBoard();
+    if (!hasErrors) {
+      this.setState(({ isAdvancedMenuOpen }) => ({
+        isAdvancedMenuOpen: !isAdvancedMenuOpen
+      }))
     }
-
-    this.setState({ isAdvancedMenuOpen: !this.state.isAdvancedMenuOpen });
-    this.createNewBoard(this.state.options.size, this.state.keys);
   }
 
   onSizeItemClick = (size) => {
-    this.createNewBoard(size, this.state.keys);
+    this.createBoard(size, this.state.cardKeys);
+
     this.setState(prevState => ({
       validationsErrors: {},
       options: {
@@ -152,6 +157,8 @@ class GameShell extends Component {
       ...prevState.options,
       stepsLimit: prevState.options.stepsLimit ? null : setStepsLimit(prevState.options.size) }
     }));
+
+    this.createBoard(this.state.options.size, this.state.cardKeys);
   }
 
   onRandomizeCellsToggle = () => {
@@ -161,79 +168,95 @@ class GameShell extends Component {
         randomizeCells: !options.randomizeCells
       }
     }));
+
+    this.createBoard(this.state.options.size, this.state.cardKeys);
   }
 
   onImageSelect = (imageItem) => {
-    const { keys, options, validationsErrors } = this.state;
+    const { cardKeys, options } = this.state;
     let invalidImageCount;
-    let updatedKeys;
+    let updatedCardKeys;
 
-    if (keys.includes(imageItem.key)) {
-      invalidImageCount = validateImageCount(keys.length - 1, options.size);
-      updatedKeys = keys.filter(key => key !== imageItem.key);
+    if (cardKeys.includes(imageItem.key)) {
+      updatedCardKeys = cardKeys.filter(key => key !== imageItem.key)
     } else {
-      invalidImageCount = validateImageCount(keys.length + 1, options.size);
-      updatedKeys = keys.concat(imageItem.key);
+      updatedCardKeys = cardKeys.concat(imageItem.key);
     }
 
-    this.setState({ validationsErrors: { ...validationsErrors, invalidImageCount }, keys: updatedKeys });
+    invalidImageCount = !isImageCountValid(updatedCardKeys, options.size);
+
+    this.setState(({ cardKeys, validationsErrors }) => ({
+      cardKeys: updatedCardKeys,
+      validationsErrors: { ...validationsErrors, invalidImageCount }
+    }));
   }
 
-  isOptionsInvalid = () => {
+  hasValidationErrors = () => {
     return !!Object.values(this.state.validationsErrors).filter(item => item).length;
   }
 
   isGameOver() {
-    return this.state.board.length > 0 && this.state.lockedItems === this.state.board.length;
+    const { board, options, lockedItems, allAtempts } = this.state;
+    const isAllOpened = board.length > 0 && lockedItems === board.length;
+
+    if (options.stepsLimit) {
+      const isLoseByStepsLimit = (options.stepsLimit - allAtempts <= 0);
+
+      return isLoseByStepsLimit ? { lose: true, end: isLoseByStepsLimit } : { end: isAllOpened }
+    }
+
+    return { end: isAllOpened }
+  }
+
+  defineSelectedKeys() {
+    const { cardKeys } = this.state;
+
+    return this.state.board.map(item => {
+      if (cardKeys.includes(item.key)) {
+        return {...item, selected: true };
+      } else {
+        return item;
+      }
+    });
   }
 
   render() {
-    const { options } = this.state;
+    const { options, allAtempts, lockedItems, cardKeys } = this.state;
     const isGameOver = this.isGameOver();
-    const predefinedItems = defineSelectedItems(this.state.keys);
+    const cardItems = defineSelectedImages(cardKeys);
+    const restCards = options.size - lockedItems;
+
+    console.log('RENDER')
 
     return (
-      <div className={classNames('game-shell', {'game-over': isGameOver})}>
-        <div className="board-container">
-          <div className="board-list">
-            {this.state.board.map((boardItem, index)=> (
-              <div key={boardItem._id} className="board-box">
-                <div className={classNames('board-item', {'open': boardItem.open, 'locked': boardItem.locked, 'success': boardItem.success})}
-                    onClick={() => boardItem.open ? null : this.onBoardItemClick(boardItem)}>
-                  <div className="board-preview board-preview-front">{index + 1}</div>
-                  <div className="board-preview board-preview-back">
-                    <img className="board-image" src={boardItem.image} alt="" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          {
-            !!this.state.errors.length &&
-            <div className="error-list">
-              {this.state.errors.map((error, index) => (
-                <div className="error-item" key={index}>{error}</div>
-              ))}
-            </div>
-          }
-          {
-            isGameOver &&
-            <div className="board-game-over">
-              <div className="game-over-title">Game Over</div>
-              <button className="btn game-over-btn" onClick={this.onNewGame}>New Game</button>
-            </div>
-          }
-        </div>
+      <div className={`game-shell ${isGameOver ? 'game-over' : ''}`}>
+        {
+          this.state.boardError
+          ? <div className="error-message">{this.state.boardError}</div>
+          : <BoardArea board={this.state.board} onBoardItemClick={this.onBoardItemClick} />
+        }
+        {
+          isGameOver.end && <GameOver status={isGameOver} onNewGame={this.onNewGame} />
+        }
+
         <div className="board-menu">
           <div className="menu-row-title nav-btn pointer" onClick={this.onAdvancedMenuToggle}>
             Advanced options:
             <i className="fa fa-angle-double-right" aria-hidden="true"></i>
           </div>
           <div className="board-information">
-            <div>All attempts: {this.state.allAtempts}</div>
-            <div>Cards left: {this.state.allAtempts}</div>
-            {!!options.stepsLimit && <div>{this.state.allAtempts} attempt(s) left</div>}
-            {options.randomizeCells && <div>Randomize cells: <span className="highlight">on</span></div>}
+            <div className="board-row">Attempts: {allAtempts}</div>
+            <div className="board-row">Cards left: {restCards}</div>
+            {
+              !!options.stepsLimit &&
+              <div className="board-row">
+                Steps limit: <span className="highlight">{options.stepsLimit - allAtempts}</span> attempt(s) left
+              </div>
+            }
+            {
+              options.randomizeCells &&
+              <div className="board-row">Randomize cells: <span className="highlight">on</span></div>
+            }
           </div>
           <GameMenu
             onMenuToggle={this.onAdvancedMenuToggle}
@@ -241,13 +264,13 @@ class GameShell extends Component {
             onSizeItemClick={this.onSizeItemClick}
             onStepLimitToggle={this.onStepLimitToggle}
             onRandomizeCellsToggle={this.onRandomizeCellsToggle}
-            items={predefinedItems}
+            items={cardItems}
+            cardKeys={cardKeys}
             isOpen={this.state.isAdvancedMenuOpen}
             open={this.props.isAdvancedMenuOpen}
             boardSizes={BOARD_SIZES}
-            options={this.state.options}
-            errors={this.state.validationsErrors}
-            isOptionsInvalid={this.isOptionsInvalid} />
+            options={options}
+            errors={this.state.validationsErrors} />
         </div>
       </div>
     )

@@ -1,4 +1,4 @@
-import { shuffle, sampleSize } from 'lodash';
+import shuffle from 'lodash/shuffle';
 
 import { extendWithId} from '../../utils/utils';
 import { itemImages } from '../../config/cardsAssets';
@@ -11,7 +11,7 @@ export const BOARD_SIZES = {
 }
 
 // const BOARD_DEFAULT_SIZE = BOARD_SIZES.small[1];
-const BOARD_DEFAULT_SIZE = 2;
+const BOARD_DEFAULT_SIZE = 4;
 
 const generateGameItems = (items) => {
   return Object.keys(items).map(item => {
@@ -45,13 +45,15 @@ export const generateBoard = (size, chosenKeys) => {
     }
 
     if (chosenKeys.length && chosenKeys.length >= halfSize) {
-      selectedItems = sampleSize(gameItems.filter(item => {
-        if (chosenKeys.includes(item.key)) {
+      const cardsKeys = chosenKeys.slice(0, halfSize);
+
+      selectedItems = gameItems.filter(item => {
+        if (cardsKeys.includes(item.key)) {
           return true;
         }
 
         return false;
-      }), halfSize);
+      });
     } else {
       selectedItems = gameItems.slice(0, halfSize);
     }
@@ -67,10 +69,12 @@ export const generateBoard = (size, chosenKeys) => {
 
 export const setStepsLimit = (size) => {
   const successLimit = size / 2;
-  return successLimit + Math.floor(successLimit / 1.5);
+  const limitRadio = 1.74;
+
+  return successLimit + Math.floor(successLimit / limitRadio);
 };
 
-export const defineSelectedItems = (activeKeys) => {
+export const defineSelectedImages = (activeKeys) => {
   if (!activeKeys.length) {
     return gameItems;
   };
@@ -84,12 +88,6 @@ export const defineSelectedItems = (activeKeys) => {
   })
 }
 
-export const validateImageCount = (keysLength, size) => {
-  if (keysLength < size / 2) {
-    const lackCount = (size / 2) - keysLength;
-
-    return `You should add atleast ${lackCount} image(s) for this board size.`;
-  }
-
-  return null;
+export const isImageCountValid = (imageKeys, boardSize) => {
+  return imageKeys.length >= boardSize / 2;
 }

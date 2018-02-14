@@ -37,7 +37,7 @@ class HardmodeSection extends Component {
         </div>
         <div className="section-row">
           <label className="toggle-label pointer">
-            <Toggle defaultChecked={options.randomizeCells} onChange={this.props.onRandomizeCellsToggle} />
+            <Toggle defaultChecked={options.randomizeCells} disabled={true} onChange={this.props.onRandomizeCellsToggle} />
             <span className={`label-header ${options.randomizeCells ? 'active' : ''}`}>Randomize cells</span>
           </label>
           <p className="section-description">
