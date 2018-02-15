@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import pickBy from 'lodash/pickBy';
-import pick from 'lodash/pick'
 
 import {
   BOARD_SIZES,
