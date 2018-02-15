@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import union from 'lodash/union';
 
 import {
   BOARD_SIZES,
@@ -57,9 +58,11 @@ class GameShell extends Component {
     if (boardStructure.error) {
       this.setState({ boardError: boardStructure.error });
     } else {
+      // console.log(union(this.state.cardKeys, boardStructure.uniqueKeys))
+      // debugger
       this.setState(({ board, cardKeys }) => ({
         board: boardStructure.items,
-        cardKeys: cardKeys.length < boardStructure.items.length ? boardStructure.uniqueKeys : cardKeys
+        cardKeys: union(cardKeys, boardStructure.uniqueKeys)
       }));
 
       this.resetBoardCounts();
@@ -229,7 +232,10 @@ class GameShell extends Component {
       cardKeys: updatedCardKeys,
       validationsErrors: { ...validationsErrors, invalidImageCount }
     }));
-    this.createBoard(this.state.options.size, updatedCardKeys);
+
+    if (!invalidImageCount) {
+      this.createBoard(this.state.options.size, updatedCardKeys);
+    }
   }
 
   hasValidationErrors = () => {
