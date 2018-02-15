@@ -69,7 +69,7 @@ class GameMenu extends Component {
             <SoundSection />
           </MenuSection>
 
-          <MenuSection header={<Fragment><i class="fa fa-code" aria-hidden="true"></i>Dev info:</Fragment>}>
+          <MenuSection header={<Fragment><i className="fa fa-code" aria-hidden="true"></i>Dev info:</Fragment>}>
             <SourceSection />
           </MenuSection>
         </Fragment>

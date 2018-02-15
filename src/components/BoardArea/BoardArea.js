@@ -19,11 +19,9 @@ class BoardArea extends Component {
   render() {
     return (
       <div className="board-container">
-          <div className="board-list">
-            {this.props.board.map((boardItem, index)=> (
-              <BoardCell key={index} cell={boardItem} index={index} onBoardItemClick={this.props.onBoardItemClick} />
-            ))}
-          </div>
+        {this.props.board.map((boardItem, index)=> (
+          <BoardCell key={index} cell={boardItem} index={index} onBoardItemClick={this.props.onBoardItemClick} />
+        ))}
       </div>
     )
   }
