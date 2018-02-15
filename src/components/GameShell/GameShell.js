@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import pickBy from 'lodash/pickBy';
+import pick from 'lodash/pick'
 
 import {
   BOARD_SIZES,
@@ -6,6 +8,7 @@ import {
   generateBoard,
   setStepsLimit,
   isImageCountValid,
+  partialShaffle,
   defineSelectedImages } from './GameShellService';
 
 import GameMenu from '../GameMenu/GameMenu';
@@ -21,15 +24,16 @@ class GameShell extends Component {
   state = {
     board: [],
     cardKeys: [],
-    shownCount: 0,
     openedItemKeys: [],
     allAtempts: 0,
     lockedItems: 0,
     boardError: '',
     validationsErrors: {},
-    isAdvancedMenuOpen: true,
+    isAdvancedMenuOpen: false,
     options: gameOptions
   }
+
+  exludeKeys = ['locked', 'open'];
 
   componentDidMount() {
     this.createBoard(this.state.options.size, this.state.cardKeys);
@@ -56,68 +60,86 @@ class GameShell extends Component {
 
   resetBoardCounts() {
     this.setState({
-      shownCount: 0,
       allAtempts: 0,
       lockedItems: 0,
       openedItemKeys: []
     })
   }
 
+  setBoardWithOpenState(board, openedId) {
+    return board.map(boardItem => {
+      if (boardItem._id === openedId && !boardItem.open) {
+        return { ...boardItem, open: !boardItem.open };
+      } else {
+        return boardItem;
+      }
+    });
+  }
+
+  setBoardWithLockedState(board, lockedKey) {
+    return board.map(boardItem => {
+      if (boardItem.key === lockedKey) {
+        return { ...boardItem, locked: true };
+      } else {
+        return boardItem;
+      }
+    })
+  }
+
+  setBoardWithCloseState(board) {
+    return board.map(boardItem => {
+      if (!boardItem.locked) {
+        return { ...boardItem, open: false };
+      } else {
+        return boardItem;
+      }
+    })
+  }
+
+  setBoardWithRandomize(board, excludeKeys) {
+    return this.state.options.randomizeCells ? partialShaffle(board, excludeKeys) : board;
+  }
+
   onBoardItemClick = ({ _id, key }) => {
     // TODO: refactor this to more readable format
     // TODO: remove showCount - you can use openedItemKeys length for this
 
-    // Set chosen card to [open] state, increase show count by 1
-    if (this.state.shownCount < GameShell.MAX_COUNT) {
-      this.setState(prevState => {
-        return {
-          board: prevState.board.map(boardItem => {
-            if (boardItem._id === _id && !boardItem.open) {
-              return { ...boardItem, open: !boardItem.open };
-            } else {
-              return boardItem;
-            }
-          }),
-          openedItemKeys: prevState.openedItemKeys.concat(key),
-          shownCount: ++prevState.shownCount
-        }
-      }, () => {
+    // Set chosen card to [open] state
+    if (this.state.openedItemKeys.length < GameShell.MAX_COUNT) {
+      this.setState(({ board, openedItemKeys }) => ({
+          board: this.setBoardWithOpenState(board, _id),
+          openedItemKeys: [ ...openedItemKeys, key]
+      }), () => {
+        const { openedItemKeys } = this.state;
+
         // Two cards are opened:
-        if (this.state.openedItemKeys.length === GameShell.MAX_COUNT) {
+        if (openedItemKeys.length === GameShell.MAX_COUNT) {
           // If two card equals - lock them and increase attempts by 1
-          if (this.state.openedItemKeys[0] === this.state.openedItemKeys[this.state.openedItemKeys.length - 1]) {
+          if (openedItemKeys[0] === openedItemKeys[openedItemKeys.length - 1]) {
             this.setState(prevState => {
               return {
-                board: prevState.board.map(boardItem => {
-                  if (boardItem.key === key) {
-                    return { ...boardItem, locked: true };
-                  } else {
-                    return boardItem;
-                  }
-                }),
+                board: this.setBoardWithLockedState(prevState.board, key),
                 openedItemKeys: [],
-                shownCount: 0,
-                lockedItems: prevState.lockedItems + 2,
+                lockedItems: prevState.lockedItems + GameShell.MAX_COUNT,
                 allAtempts: ++prevState.allAtempts
               }
             })
+            // set update state in next cycle, even it would be batched
+            this.setState(({ board }) => ({
+              board: this.setBoardWithRandomize(board, this.exludeKeys)
+            }));
           } else {
-            // If two cards are not equals - remove [open] state from them and clear count/attempts counts
+            // If two cards are not equals - remove [open] state from them and clear opened items/attempts counts
             this.failedAttemptTimeout = setTimeout(() => {
-              this.setState(prevState => {
-                return {
-                  board: prevState.board.map(boardItem => {
-                    if (!boardItem.locked) {
-                      return { ...boardItem, open: false };
-                    } else {
-                      return boardItem;
-                    }
-                  }),
-                  openedItemKeys: [],
-                  shownCount: 0,
-                  allAtempts: ++prevState.allAtempts
-                }
-              })
+              this.setState(({ board, allAtempts }) => ({
+                board: this.setBoardWithCloseState(board),
+                openedItemKeys: [],
+                allAtempts: ++allAtempts
+              }));
+
+              this.setState(({ board }) => ({
+                board: this.setBoardWithRandomize(board, this.exludeKeys)
+              }));
             }, GameShell.ANIMATION_TIMEOUT);
           }
         }
@@ -225,8 +247,6 @@ class GameShell extends Component {
     const isGameOver = this.isGameOver();
     const cardItems = defineSelectedImages(cardKeys);
     const restCards = options.size - lockedItems;
-
-    console.log('RENDER')
 
     return (
       <div className={`game-shell ${isGameOver ? 'game-over' : ''}`}>

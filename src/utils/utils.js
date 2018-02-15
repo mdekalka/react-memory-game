@@ -5,3 +5,7 @@ export const extendWithId = (list = []) => {
     return { ...listItem, _id: cuid() };
   })
 }
+
+export const isKeysFalsy = (object, keys) => {
+  return keys.every(key => !object[key]);
+}

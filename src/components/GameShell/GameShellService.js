@@ -1,6 +1,6 @@
 import shuffle from 'lodash/shuffle';
 
-import { extendWithId} from '../../utils/utils';
+import { extendWithId, isKeysFalsy } from '../../utils/utils';
 import { itemImages } from '../../config/cardsAssets';
 
 // export const BOARD_AVAILABLE_SIZES = [10, 12, 14, 16];
@@ -11,7 +11,7 @@ export const BOARD_SIZES = {
 }
 
 // const BOARD_DEFAULT_SIZE = BOARD_SIZES.small[1];
-const BOARD_DEFAULT_SIZE = 4;
+const BOARD_DEFAULT_SIZE = 6;
 
 const generateGameItems = (items) => {
   return Object.keys(items).map(item => {
@@ -28,7 +28,7 @@ export const gameOptions = {
   size: BOARD_DEFAULT_SIZE,
   items: gameItems,
   stepsLimit: null,
-  randomizeCells: false
+  randomizeCells: true
 };
 
 export const generateBoard = (size, chosenKeys) => {
@@ -90,4 +90,27 @@ export const defineSelectedImages = (activeKeys) => {
 
 export const isImageCountValid = (imageKeys, boardSize) => {
   return imageKeys.length >= boardSize / 2;
+}
+
+export const insertItemsByIndex = (array, keysCollection) => {
+  for (let index in keysCollection) {
+    array.splice(index, 0, keysCollection[index]);
+  }
+
+  return array;
+}
+
+export const partialShaffle = (array, keys) => {
+  let bufferIndexes = {};
+
+  const withoutKeys = array.filter((item, index) => {
+    if (isKeysFalsy(item, keys)) {
+      return true
+    }
+
+    bufferIndexes[index] = item
+    return false;
+  })
+
+  return insertItemsByIndex(shuffle(withoutKeys), bufferIndexes);
 }
