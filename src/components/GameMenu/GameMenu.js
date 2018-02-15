@@ -7,6 +7,7 @@ import SoundSection from '../SoundSection/SoundSection';
 import HardmodeSection from '../HardmodeSection/HardmodeSection';
 import BoardSizeSection from '../BoardSizeSection/BoardSizeSection';
 import BoardImageSection from '../BoardImageSection/BoardImageSection';
+import SourceSection from '../SourceSection/SourceSection';
 
 class GameMenu extends Component {
   static propTypes = {
@@ -66,6 +67,10 @@ class GameMenu extends Component {
 
           <MenuSection header={<Fragment><i className="fa fa-music" aria-hidden="true"></i>Sound list:</Fragment>}>
             <SoundSection />
+          </MenuSection>
+
+          <MenuSection header={<Fragment><i class="fa fa-code" aria-hidden="true"></i>Dev info:</Fragment>}>
+            <SourceSection />
           </MenuSection>
         </Fragment>
       </Drawer>

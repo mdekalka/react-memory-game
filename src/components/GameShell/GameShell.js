@@ -257,7 +257,6 @@ class GameShell extends Component {
         {
           isGameOver.end && <GameOver status={isGameOver} onNewGame={this.onNewGame} />
         }
-
         <div className="board-menu">
           <div className="menu-row-title nav-btn pointer" onClick={this.onAdvancedMenuToggle}>
             Advanced options:
