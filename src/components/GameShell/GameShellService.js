@@ -26,7 +26,7 @@ export const gameOptions = {
   size: BOARD_DEFAULT_SIZE,
   items: gameItems,
   stepsLimit: null,
-  randomizeCells: true
+  randomizeCells: false
 };
 
 export const generateBoard = (size, chosenKeys) => {

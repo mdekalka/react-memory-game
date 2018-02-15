@@ -102,7 +102,6 @@ class GameShell extends Component {
 
   onBoardItemClick = ({ _id, key }) => {
     // TODO: refactor this to more readable format
-    // TODO: remove showCount - you can use openedItemKeys length for this
 
     // Set chosen card to [open] state
     if (this.state.openedItemKeys.length < GameShell.MAX_COUNT) {
