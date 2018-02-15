@@ -9,7 +9,8 @@ export const BOARD_SIZES = {
   large: [20, 22 ,24]
 }
 
-const BOARD_DEFAULT_SIZE = BOARD_SIZES.small[1];
+// const BOARD_DEFAULT_SIZE = BOARD_SIZES.small[1];
+const BOARD_DEFAULT_SIZE = 4;
 
 const generateGameItems = (items) => {
   return Object.keys(items).map(item => {

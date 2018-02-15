@@ -94,12 +94,16 @@ class GameShell extends Component {
     })
   }
 
+  setBoardWithFinalState(board) {
+    return board.map(boardItem => ({ ...boardItem, locked: true, open: true }));
+  }
+
   setBoardWithRandomize(board, excludeKeys) {
     return this.state.options.randomizeCells ? partialShaffle(board, excludeKeys) : board;
   }
 
   onBoardItemClick = ({ _id, key }) => {
-    // TODO: refactor this to more readable format
+    // Note: Hey you... React lover. Use pixi/phaser next time please. Thx.
 
     // Set chosen card to [open] state
     if (this.state.openedItemKeys.length < GameShell.MAX_COUNT) {
@@ -113,6 +117,13 @@ class GameShell extends Component {
         if (openedItemKeys.length === GameShell.MAX_COUNT) {
           // If two card equals - lock them and increase attempts by 1
           if (openedItemKeys[0] === openedItemKeys[openedItemKeys.length - 1]) {
+            // Check if there are only two cards left - just open them
+            if (this.state.board.length - (this.state.lockedItems + GameShell.MAX_COUNT) === GameShell.MAX_COUNT) {
+              return this.setState(({ board }) => ({
+                board: this.setBoardWithFinalState(board)
+              }));
+            }
+
             this.setState(prevState => {
               return {
                 board: this.setBoardWithLockedState(prevState.board, key),
@@ -120,8 +131,9 @@ class GameShell extends Component {
                 lockedItems: prevState.lockedItems + GameShell.MAX_COUNT,
                 allAtempts: ++prevState.allAtempts
               }
-            })
-            // set update state in next cycle, even it would be batched
+            });
+
+            // set update state in next cycle, even they would be batched
             this.setState(({ board }) => ({
               board: this.setBoardWithRandomize(board, this.exludeKeys)
             }));
