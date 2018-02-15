@@ -16,18 +16,28 @@ import GameOver from '../GameOver/GameOver';
 import './GameShell.scss';
 
 class GameShell extends Component {
-  static MAX_COUNT = 2;
+  static MAX_CARD_OPEN_COUNT = 2;
   static ANIMATION_TIMEOUT = 1000;
 
   state = {
+    // board card items list
     board: [],
+    // unique list of card keys
     cardKeys: [],
+    userDiffCardKeys: [],
+    // buffer store two cards to compare
     openedItemKeys: [],
+    // all attempts count
     allAtempts: 0,
+    // success guessed cards
     lockedItems: 0,
+    // creating board error
     boardError: '',
+    // advanced options validation errors
     validationsErrors: {},
-    isAdvancedMenuOpen: false,
+    // side menu open/close state
+    isAdvancedMenuOpen: true,
+    // predefined game options
     options: gameOptions
   }
 
@@ -42,15 +52,15 @@ class GameShell extends Component {
   }
 
   createBoard(size, chosenItems) {
-    const board = generateBoard(size, chosenItems);
+    const boardStructure = generateBoard(size, chosenItems);
 
-    if (board.error) {
-      this.setState({ boardError: board.error });
+    if (boardStructure.error) {
+      this.setState({ boardError: boardStructure.error });
     } else {
-      this.setState({
-        board: board.items,
-        cardKeys: board.uniqueKeys
-      });
+      this.setState(({ board, cardKeys }) => ({
+        board: boardStructure.items,
+        cardKeys: cardKeys.length < boardStructure.items.length ? boardStructure.uniqueKeys : cardKeys
+      }));
 
       this.resetBoardCounts();
     }
@@ -106,7 +116,7 @@ class GameShell extends Component {
     // Note: Hey you... React lover. Use pixi/phaser next time please. Thx.
 
     // Set chosen card to [open] state
-    if (this.state.openedItemKeys.length < GameShell.MAX_COUNT) {
+    if (this.state.openedItemKeys.length < GameShell.MAX_CARD_OPEN_COUNT) {
       this.setState(({ board, openedItemKeys }) => ({
           board: this.setBoardWithOpenState(board, _id),
           openedItemKeys: [ ...openedItemKeys, key]
@@ -114,11 +124,11 @@ class GameShell extends Component {
         const { openedItemKeys } = this.state;
 
         // Two cards are opened:
-        if (openedItemKeys.length === GameShell.MAX_COUNT) {
+        if (openedItemKeys.length === GameShell.MAX_CARD_OPEN_COUNT) {
           // If two card equals - lock them and increase attempts by 1
           if (openedItemKeys[0] === openedItemKeys[openedItemKeys.length - 1]) {
             // Check if there are only two cards left - just open them
-            if (this.state.board.length - (this.state.lockedItems + GameShell.MAX_COUNT) === GameShell.MAX_COUNT) {
+            if (this.state.board.length - (this.state.lockedItems + GameShell.MAX_CARD_OPEN_COUNT) === GameShell.MAX_CARD_OPEN_COUNT) {
               return this.setState(({ board }) => ({
                 board: this.setBoardWithFinalState(board),
                 lockedItems: board.length
@@ -128,7 +138,7 @@ class GameShell extends Component {
             this.setState(({ board, lockedItems, allAtempts }) => ({
               board: this.setBoardWithLockedState(board, key),
               openedItemKeys: [],
-              lockedItems: lockedItems + GameShell.MAX_COUNT,
+              lockedItems: lockedItems + GameShell.MAX_CARD_OPEN_COUNT,
               allAtempts: ++allAtempts
             }));
 
@@ -219,6 +229,7 @@ class GameShell extends Component {
       cardKeys: updatedCardKeys,
       validationsErrors: { ...validationsErrors, invalidImageCount }
     }));
+    this.createBoard(this.state.options.size, updatedCardKeys);
   }
 
   hasValidationErrors = () => {
@@ -232,10 +243,10 @@ class GameShell extends Component {
     if (options.stepsLimit) {
       const isLoseByStepsLimit = (options.stepsLimit - allAtempts <= 0);
 
-      return isLoseByStepsLimit ? { lose: true, end: isLoseByStepsLimit } : { end: isAllOpened }
+      return isLoseByStepsLimit ? { lose: true, end: isLoseByStepsLimit } : { end: isAllOpened };
     }
 
-    return { end: isAllOpened }
+    return { end: isAllOpened };
   }
 
   defineSelectedKeys() {

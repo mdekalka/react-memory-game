@@ -73,10 +73,6 @@ export const setStepsLimit = (size) => {
 };
 
 export const defineSelectedImages = (activeKeys) => {
-  if (!activeKeys.length) {
-    return gameItems;
-  };
-
   return gameItems.map(item => {
     if (activeKeys.includes(item.key)) {
       return {...item, selected: true };

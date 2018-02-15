@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import GameShell from './components/GameShell/GameShell';
-import './App.css';
+import './App.scss';
 
 class App extends Component {
   render() {
