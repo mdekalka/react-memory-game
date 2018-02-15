@@ -120,18 +120,17 @@ class GameShell extends Component {
             // Check if there are only two cards left - just open them
             if (this.state.board.length - (this.state.lockedItems + GameShell.MAX_COUNT) === GameShell.MAX_COUNT) {
               return this.setState(({ board }) => ({
-                board: this.setBoardWithFinalState(board)
+                board: this.setBoardWithFinalState(board),
+                lockedItems: board.length
               }));
             }
 
-            this.setState(prevState => {
-              return {
-                board: this.setBoardWithLockedState(prevState.board, key),
-                openedItemKeys: [],
-                lockedItems: prevState.lockedItems + GameShell.MAX_COUNT,
-                allAtempts: ++prevState.allAtempts
-              }
-            });
+            this.setState(({ board, lockedItems, allAtempts }) => ({
+              board: this.setBoardWithLockedState(board, key),
+              openedItemKeys: [],
+              lockedItems: lockedItems + GameShell.MAX_COUNT,
+              allAtempts: ++allAtempts
+            }));
 
             // set update state in next cycle, even they would be batched
             this.setState(({ board }) => ({
