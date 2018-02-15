@@ -3,15 +3,13 @@ import shuffle from 'lodash/shuffle';
 import { extendWithId, isKeysFalsy } from '../../utils/utils';
 import { itemImages } from '../../config/cardsAssets';
 
-// export const BOARD_AVAILABLE_SIZES = [10, 12, 14, 16];
 export const BOARD_SIZES = {
   small: [8, 10, 12],
   medium: [14, 16, 18],
   large: [20, 22 ,24]
 }
 
-// const BOARD_DEFAULT_SIZE = BOARD_SIZES.small[1];
-const BOARD_DEFAULT_SIZE = 6;
+const BOARD_DEFAULT_SIZE = BOARD_SIZES.small[1];
 
 const generateGameItems = (items) => {
   return Object.keys(items).map(item => {
