@@ -1,4 +1,5 @@
 import shuffle from 'lodash/shuffle';
+import sampleSize from 'lodash/sampleSize';
 
 import { extendWithId, isKeysFalsy } from '../../utils/utils';
 import { itemImages } from '../../config/cardsAssets';
@@ -43,7 +44,7 @@ export const generateBoard = (size, chosenKeys) => {
     }
 
     if (chosenKeys.length && chosenKeys.length >= halfSize) {
-      const cardsKeys = chosenKeys.slice(0, halfSize);
+      const cardsKeys = sampleSize(chosenKeys, halfSize);
 
       selectedItems = gameItems.filter(item => {
         if (cardsKeys.includes(item.key)) {
