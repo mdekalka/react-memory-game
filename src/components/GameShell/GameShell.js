@@ -58,8 +58,6 @@ class GameShell extends Component {
     if (boardStructure.error) {
       this.setState({ boardError: boardStructure.error });
     } else {
-      // console.log(union(this.state.cardKeys, boardStructure.uniqueKeys))
-      // debugger
       this.setState(({ board, cardKeys }) => ({
         board: boardStructure.items,
         cardKeys: union(cardKeys, boardStructure.uniqueKeys)
