@@ -25,6 +25,7 @@ class BoardSizeSection extends Component {
 
     return (
       <div className="image-section">
+        <div className="section-description">Selected images will be randomly reflected on your board.</div>
         <ul className="image-list">
           {list.map(imageItem => (
             <li
