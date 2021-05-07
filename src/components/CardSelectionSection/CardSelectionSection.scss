@@ -1,0 +1,64 @@
+.card-selection {
+  .card-list {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    margin-top: -10px;
+
+    .card {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      margin: 10px 10px 0 0;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(39, 34, 22, .75);
+        transition: background-color .14s ease;
+      }
+
+      &:hover:not(.selected) {
+        &::before {
+          background-color: rgba(39, 34, 22, .4);
+        }
+      }
+
+      &.selected {
+        &::before {
+          background-color: transparent;
+        }
+      }
+
+      &.selected {
+        .fa {
+          color: #248615;
+          opacity: 1;
+        }
+      }
+
+      .fa {
+        opacity: 0;
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        color: rgba(134, 94, 9, 0.47);
+        transition: opacity .15s ease;
+        z-index: 1;
+      }
+    }
+
+    .card-image {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .error-message {
+    margin-top: 10px;
+  }
+}

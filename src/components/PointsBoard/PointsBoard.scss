@@ -1,0 +1,16 @@
+.points-board {
+  display: flex;
+  margin: 10px 0 15px;
+
+  .board-row {
+    font-size: 14px;
+    margin-right: 10px;
+
+    &:not(:first-child):before {
+      content: "|";
+      position: relative;
+      margin-right: 5px;
+      color: #48accc;
+    }
+  }
+}

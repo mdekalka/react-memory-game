@@ -1,0 +1,100 @@
+.board-cell {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  transform-style: preserve-3d;
+  perspective: 1300px;
+  cursor: pointer;
+
+  &:not(.guessed):not(.opened) {
+    box-shadow: 0px 0 6px 0 #443f4cbf;
+  }
+
+  .cell-preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    font-size: 26px;
+    backface-visibility: hidden;
+    transition: transform .4s;
+  }
+
+  .cell-preview-front {
+    background: #151823 url('../../../assets//icons/pokeball.png') no-repeat center;
+    background-size: 50px 50px;
+  }
+
+  .cell-preview-back {
+    transform: rotateY(-180deg);
+  }
+
+  .cell-image {
+    width: 100%;
+    height: 100%;
+  }
+
+  &:hover {
+    .cell-preview-front {
+      background-color: #0E141A;
+    }
+  }
+
+  &.opened {
+    .cell-preview-front {
+      transform: rotateY(180deg);
+    }
+
+    .cell-preview-back {
+      transform: rotateY(0deg);
+    }
+
+    &.guessed {
+      .cell-preview-front,
+      .cell-preview-back {
+        animation: shake .36s ease-in;
+      }
+    }
+  }
+
+  &.guessed {
+    .cell-preview-back {
+      border: 1px solid rgba(134, 94, 9, 0.47);
+
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        box-shadow: inset 5px -3px 73px 6px #000, inset -5px 3px 75px 6px #000;
+        background: rgba(0, 0, 0, .3);
+      }
+    }
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(3deg);
+  }
+  40% {
+    transform: rotate(-3deg);
+  }
+  60% {
+    transform: rotate(3deg);
+  }
+  80% {
+    transform: rotate(-3deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}

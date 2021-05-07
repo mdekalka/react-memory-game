@@ -1,18 +1,17 @@
-.menu-row-title {
-  padding: 8px 15px;
-  background-color: #253c52;
-
-  .fa {
-    margin-right: 5px;
-  }
-}
-
-.menu-row-content {
-  padding: 20px 15px;
-}
-
-.menu-row {
-  .section-description {
+.menu-section {
+  &-title {
+    margin: 0;
+    padding: 8px 15px;
+    background-color: #253c52;
     font-size: 14px;
+    font-weight: normal;
+
+    .fa {
+      margin-right: 5px;
+    }
+  }
+  
+  &-content {
+    padding: 20px 0px;
   }
 }

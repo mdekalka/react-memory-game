@@ -1,0 +1,11 @@
+.message {
+  margin-top: 8px;
+  
+  &.error {
+    color: #da4747;
+  }
+  
+  &.success {
+    color: #64DD17
+  }
+}

@@ -1,0 +1,24 @@
+.track-preview {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+
+  .track-title {
+    margin: 0 16px;
+    color: #00bcd4;
+  }
+
+  &-icon {
+    width: 40px;
+    margin-right: 14px;
+    border-radius: 4px;
+  }
+
+  &-controls {
+    flex-shrink: 0;
+
+    .fa:last-child {
+      margin-right: 0;
+    }
+  }
+}

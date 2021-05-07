@@ -1,0 +1,33 @@
+.game-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: relative;
+  min-height: 100%;
+  max-width: 1280px;
+  margin: 20px auto;
+
+  .game-header {
+    font-size: 22px;
+    margin: 10px 0 16px;
+    color: #8f8e9a;
+  }
+}
+
+.board-menu {
+  width: 500px;
+  margin-left: 25px;
+  height: 100%;
+  align-self: flex-start;
+
+  .nav-btn {
+    background-color: #000;
+  }
+
+  .board-information {
+    height: 100%;
+    padding: 15px;
+
+  }
+}

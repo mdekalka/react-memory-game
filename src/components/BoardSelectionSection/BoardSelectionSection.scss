@@ -1,0 +1,95 @@
+.board-selection {
+  position: relative;
+  margin-left: 26px;
+
+  .size-title {
+    margin-bottom: 4px;
+    font-size: 12px;
+    text-transform: capitalize;
+  }
+
+  .size-row {
+    position: relative;
+    display: block;
+    padding-bottom: 16px;
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      display: inline-block;
+      font: normal normal normal 14px/1 FontAwesome;
+      font-size: inherit;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+      position: absolute;
+      font-size: 15px;
+      left: -26px;
+      background-color: #161B20;
+      z-index: 2;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -23px;
+      height: 100%;
+      width: 1px;
+      z-index: 1;
+    }
+
+    &.small {
+      &::before {
+        content: '\f2c9';
+        color: #64DD17;
+      }
+
+      &::after {
+        background: linear-gradient(#64DD17, #FFEA00);
+      }
+    }
+
+    &.medium {
+      &::before {
+        content: '\f2c8';
+        color: #FFEA00;
+      }
+
+      &::after {
+        background: linear-gradient(#FFEA00, #FF3D00);
+      }
+    }
+
+    &.large {
+      &::before {
+        content: '\f2c7';
+        color: #FF3D00;
+      }
+
+      &::after {
+        background: linear-gradient(#FF3D00, #DD2C00);;
+      }
+    }
+  }
+
+  .size-item {
+    display: inline-block;
+    width: 60px;
+    padding: 15px 0;
+    text-align: center;
+    background-color: #000;
+    margin-right: 15px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &.active {
+      background-color: #253c52;
+    }
+  }
+}

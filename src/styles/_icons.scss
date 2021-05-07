@@ -1,16 +1,13 @@
 .icon {
   padding: 6px;
   font-size: 16px;
-  cursor: pointer;
   transition: color .15s ease;
-  margin-right: 6px;
-  // color: #48accc;
-  // TODO: check text-shadow
-  // text-shadow: 0 0 21px rgba(223, 206, 228, 0.5), 0 -1px 0 #311d47;
+  margin-right: 10px;
+  cursor: pointer;
 
   &:hover,
   &:active,
   &.active {
-    color: #48accc;
+    color: #00bcd4;
   }
 }

@@ -1,0 +1,12 @@
+.open-settings {
+  position: fixed;
+  top: 30px;
+  left: 30px;
+  z-index: 1;
+
+  .fa-music {
+    &.playing {
+      color: #00bcd4;
+    }
+  }
+}
