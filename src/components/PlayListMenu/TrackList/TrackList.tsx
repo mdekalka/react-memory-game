@@ -1,12 +1,14 @@
 import cx from 'classnames';
 
+import { PlaybackState } from '../usePlaybackState';
+
 import './TrackList.scss';
 
 
 interface TrackListProps {
-  playbackState: any,
-  tracks: Track[],
-  activeTrack: Track,
+  playbackState: PlaybackState
+  tracks: Track[]
+  activeTrack: Track
   onChangeTrack: (track: Track) => void
 }
 

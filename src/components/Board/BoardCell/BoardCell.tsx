@@ -4,7 +4,7 @@ import './BoardCell.scss';
 
 
 interface BoardCellProps {
-  cell?: Cell,
+  cell?: Cell
   onCellClick: (cell: Cell) => void
 }
 

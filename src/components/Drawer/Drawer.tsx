@@ -45,7 +45,6 @@ export const Drawer = ({ opened, position, blackout, children, onClose, preventC
       </div>
     </div>
   )
-
 }
 
 export default Drawer;

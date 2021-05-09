@@ -31,7 +31,8 @@ const AudioPlayer = forwardRef(({ playbackState, activeTrack, onDuration, onProg
       onProgress={onProgress}
       onEnded={onEnded}
       width='100%'
-      height='0px' />
+      height='0px'
+    />
   )
 })
 

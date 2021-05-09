@@ -11,6 +11,7 @@ import tragicLove from '../assets/music/Tragic_Love.mp3'
 
 import icon from '../assets/icons/logo.png'
 
+
 export const TRACKS_LIST = [
   {
     id: 1,

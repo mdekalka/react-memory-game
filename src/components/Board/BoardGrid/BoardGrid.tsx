@@ -1,4 +1,5 @@
 import { memo } from 'react';
+
 import { splitToChunks } from '../../../utils/array';
 
 import BoardCell from '../BoardCell/BoardCell';

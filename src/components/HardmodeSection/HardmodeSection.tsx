@@ -1,8 +1,8 @@
+import { useEffect } from 'react';
 import Toggle from 'react-toggle';
 import cx from 'classnames';
 
 import './HardmodeSection.scss';
-import { useEffect } from 'react';
 
 
 const calculateStepsLimit = (boardSize: number) => {
