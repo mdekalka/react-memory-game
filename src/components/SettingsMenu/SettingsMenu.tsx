@@ -15,7 +15,7 @@ interface SettingsMenuProps {
 }
 
 const SettingsMenu = ({ options, onOptionsUpdate }: SettingsMenuProps) => {
-  const [ opened, setOpened ] = useState(true);
+  const [ opened, setOpened ] = useState(false);
   const [ preventClose, setPreventClose ] = useState(false);
 
   const onError = (hasError?: boolean) => {
