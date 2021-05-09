@@ -26,18 +26,16 @@ const CardSelectionSection = ({ options, onOptionsUpdate, onError }: CardSelecti
     const selectedCards = cardItems.filter(({ selected }) => !!selected);
     const insufficientCardCount = insufficientCardsSelected(selectedCards, boardSize);
 
-    setInsufficientCardCount(insufficientCardCount);
-    
+
     if (insufficientCardCount > 0) {
       let cardsToSelect = boardSize / 2;
       const filledCardItems = cardItems.map(card => ({ ...card, selected: !!(cardsToSelect-- > 0) }));
 
-      onError?.(false);
-      setInsufficientCardCount(0);
       onOptionsUpdate({ cardItems: filledCardItems });
-    } else {
-      setInsufficientCardCount(insufficientCardCount);
     }
+
+    setInsufficientCardCount(insufficientCardCount > 0 ? 0 : insufficientCardCount);
+    onError?.(false);
 
   }, [boardSize, onOptionsUpdate]);
 
