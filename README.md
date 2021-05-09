@@ -12,4 +12,4 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 Demo preview: [Demo](https://mdekalka.github.io/react-memory-game/)
 
 ## Demo Preview
-TODO
+https://user-images.githubusercontent.com/5993559/117587667-c0b72100-b127-11eb-9250-a0882a52e4c2.mp4
