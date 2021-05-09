@@ -18,7 +18,7 @@ interface HardmodeSectionProps {
 }
 
 const HardmodeSection = ({ options, onOptionsUpdate }: HardmodeSectionProps) => {
-  const { stepsLimit, randomizeCells, boardSize } = options;
+  const { stepsLimit, boardSize } = options;
   const limit = calculateStepsLimit(boardSize);
 
   useEffect(() => {
@@ -47,14 +47,15 @@ const HardmodeSection = ({ options, onOptionsUpdate }: HardmodeSectionProps) => 
         {!!options.stepsLimit &&
           <p className="section-description">You have only <span className="highlight">{limit}</span> attempts to finish the game</p>}
       </div>
-      <div className="section-row">
+      {/* TODO: future feature */}
+      {/* <div className="section-row">
         <label className="toggle-label pointer">
           <Toggle defaultChecked={randomizeCells} onChange={() => onOptionsUpdate({ randomizeCells: !randomizeCells })} />
           <span className={cx('label-header', { active: randomizeCells })}>Randomize cells</span>
         </label>
         <p className="section-description">If this option is enabled - all hidden cells will be randomize position after each failed attempt.</p>
         {!!randomizeCells && <p className="section-description"><span className="highlight">Are you sure?</span></p>}
-      </div>
+      </div> */}
     </div>
   )
 }

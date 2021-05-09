@@ -6,8 +6,7 @@ import {
     setGuessedCells,
     setOpenedLastCells,
     setOpenedCells,
-    setClosedCells,
-    setRandomizeCells
+    setClosedCells
 } from '../../utils/boardUtils';
 import { MAX_CARD_OPEN_COUNT, CARD_FLIP_ANIMATION_DELAY } from '../../constants/constants';
 import { GAME_CONFIG } from '../../config/config';
