@@ -25,6 +25,8 @@ const CardSelectionSection = ({ options, onOptionsUpdate, onError }: CardSelecti
   useEffect(() => {
     const selectedCards = cardItems.filter(({ selected }) => !!selected);
     const insufficientCardCount = insufficientCardsSelected(selectedCards, boardSize);
+
+    setInsufficientCardCount(insufficientCardCount);
     
     if (insufficientCardCount > 0) {
       let cardsToSelect = boardSize / 2;
@@ -33,6 +35,8 @@ const CardSelectionSection = ({ options, onOptionsUpdate, onError }: CardSelecti
       onError?.(false);
       setInsufficientCardCount(0);
       onOptionsUpdate({ cardItems: filledCardItems });
+    } else {
+      setInsufficientCardCount(insufficientCardCount);
     }
 
   }, [boardSize, onOptionsUpdate]);
