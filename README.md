@@ -1,7 +1,15 @@
-# Card Game
+## Memory game written in React with [Create React App](https://github.com/facebook/create-react-app).
 
-Gard Game with some advanced options
+In the project directory, you can run:
 
-[TODO: Add description]
+### `yarn start`
 
-[Codepen link](https://codepen.io/piupiupiu/pen/LQOJQP)
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+## Demo Link
+
+Demo preview: [Demo](https://mdekalka.github.io/react-memory-game/)
+
+## Demo Preview
+TODO
